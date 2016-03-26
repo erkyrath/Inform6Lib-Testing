@@ -16,3 +16,21 @@ Then you can run this sort of command:
 
     python3 dotest.py --compiler ~/src/inform6/inform --lib ../../i6lib-611 --terp ~/bin/glulxer *.inf
 
+Each test looks like regular Inform 6 source code, except that the source
+ends with the line
+
+    #END; ! test
+
+This ends compilation and also signals that a list of tests will follow.
+A test looks like
+
+    * testname
+    initial text
+    more initial text
+    > command
+    command response
+
+The test ensures that the lines of text in each block appear *somewhere
+in* the appropriate game output. A test line may be a subset of the game
+output line, and it may be anywhere in the output -- line order is not
+checked.
