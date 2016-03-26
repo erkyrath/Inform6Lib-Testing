@@ -1,0 +1,76 @@
+Constant Story "RUINS";
+Constant Headline "^An Interactive Worked Example^
+             Copyright (c) 1999 by Angela M. Horns.^";
+
+Include "Parser";
+Include "VerbLib";
+
+Object Forest "~Great Plaza~"
+ with description
+          "Or so your notes call this low escarpment of limestone,
+          but the rainforest has claimed it back. Dark olive
+          trees crowd in on all sides, the air steams with the
+          mist of a warm recent rain, midges hang in the air.
+          ~Structure 10~ is a shambles of masonry which might
+          once have been a burial pyramid, and little survives
+          except stone-cut steps leading down into darkness below.",
+      d_to steps,
+has  light;
+
+Object -> steps "stone-cut steps"
+  with name 'steps' 'stone' 'stairs' 'stone-cut' 'pyramid' 'burial'
+            'structure' 'ten' '10',
+       description
+           "The cracked and worn steps descend into a dim chamber.
+           Yours might be the first feet to tread them for five
+           hundred years.",
+       door_to Square_Chamber,
+       door_dir d_to
+  has  scenery static door open;
+
+Object -> mushroom "speckled mushroom"
+  with name 'speckled' 'mushroom' 'fungus' 'toadstool',
+       initial
+           "A speckled mushroom grows out of the sodden earth, on
+           a long stalk.",
+       description
+           "The mushroom is capped with blotches, and you aren't
+           at all sure it's not a toadstool.",
+  has  edible;
+
+Object Square_Chamber "Square Chamber"
+  with description
+           "A sunken, gloomy stone chamber, ten yards across. A shaft
+           of sunlight cuts in from the steps above, giving the chamber
+           a diffuse light, but in the shadows low lintelled doorways
+           lead east and south into the deeper darkness of the
+           Temple.",
+  has  light;
+
+[ Initialise;
+  location = Forest;
+  "^^^Days of searching, days of thirsty hacking through the briars of
+  the forest, but at last your patience was rewarded. A discovery!^";
+];
+
+Include "Grammar";
+
+#END; ! test
+
+* test
+
+"Great Plaza"
+Or so your notes call this low escarpment of limestone
+A speckled mushroom grows out of the sodden earth, on a long stalk.
+
+>down
+
+Square Chamber
+A sunken, gloomy stone chamber, ten yards across.
+
+>up 
+You can't go that way.
+
+>look
+
+Square Chamber

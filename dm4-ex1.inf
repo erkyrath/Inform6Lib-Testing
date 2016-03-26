@@ -1,0 +1,70 @@
+Constant Story "RUINS";
+Constant Headline "^An Interactive Worked Example^
+             Copyright (c) 1999 by Angela M. Horns.^";
+
+Include "Parser";
+Include "VerbLib";
+
+Object Forest "~Great Plaza~"
+ with description
+          "Or so your notes call this low escarpment of limestone,
+          but the rainforest has claimed it back. Dark olive
+          trees crowd in on all sides, the air steams with the
+          mist of a warm recent rain, midges hang in the air.
+          ~Structure 10~ is a shambles of masonry which might
+          once have been a burial pyramid, and little survives
+          except stone-cut steps leading down into darkness below.",
+has  light;
+
+Object -> mushroom "speckled mushroom"
+  with name 'speckled' 'mushroom' 'fungus' 'toadstool',
+       initial
+           "A speckled mushroom grows out of the sodden earth, on
+           a long stalk.",
+       description
+           "The mushroom is capped with blotches, and you aren't
+           at all sure it's not a toadstool.",
+       mushroom_picked,
+       after [;
+        Take: if (self.mushroom_picked)
+                  "You pick up the slowly-disintegrating mushroom.";
+              self.mushroom_picked = true;
+              "You pick the mushroom, neatly cleaving its thin stalk.";
+        Drop: "The mushroom drops to the ground, battered slightly.";
+       ],
+  has  edible;
+
+[ Initialise;
+  location = Forest;
+  "^^^Days of searching, days of thirsty hacking through the briars of
+  the forest, but at last your patience was rewarded. A discovery!^";
+];
+
+Include "Grammar";
+
+#END; ! test
+
+* test
+
+"Great Plaza"
+Or so your notes call this low escarpment of limestone
+A speckled mushroom grows out of the sodden earth, on a long stalk.
+
+>get mushroom
+You pick the mushroom, neatly cleaving its thin stalk.
+
+>x fungus
+The mushroom is capped with blotches, and you aren't at all sure it's not a toadstool.
+
+>drop toadstool
+The mushroom drops to the ground, battered slightly.
+
+>get it
+You pick up the slowly-disintegrating mushroom.
+
+>drop it
+The mushroom drops to the ground, battered slightly.
+
+>get it
+You pick up the slowly-disintegrating mushroom.
+
