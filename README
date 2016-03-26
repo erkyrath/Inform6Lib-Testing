@@ -1,0 +1,18 @@
+This is a work-in-progress collection of tests for the Inform 6 library.
+
+I intend (over time) to fill in all of the exercises from the DM4,
+plus any ad-hoc cases that seem desirable for testing library
+features. I don't have a timeline for getting that done, however. It's
+a low priority.
+
+To run these tests, you must have:
+
+- The Inform 6 compiler
+- The Inform libraries release 6/11. (Tests are not checked against the
+  in-progress 6/12 libraries!)
+- A Glulx interpreter compiled with the RemGlk library.
+
+Then you can run this sort of command:
+
+    python3 dotest.py --compiler ~/src/inform6/inform --lib ../../i6lib-611 --terp ~/bin/glulxer *.inf
+
