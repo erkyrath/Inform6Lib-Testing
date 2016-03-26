@@ -1,4 +1,5 @@
 Constant Story "Example 3";
+Constant Headline "^";
 
 Include "Parser";
 Include "VerbLib";

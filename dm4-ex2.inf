@@ -1,6 +1,5 @@
-Constant Story "RUINS";
-Constant Headline "^An Interactive Worked Example^
-             Copyright (c) 1999 by Angela M. Horns.^";
+Constant Story "Example 2";
+Constant Headline "^";
 
 Include "Parser";
 Include "VerbLib";
