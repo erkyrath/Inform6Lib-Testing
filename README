@@ -34,3 +34,8 @@ The test ensures that the lines of text in each block appear *somewhere
 in* the appropriate game output. A test line may be a subset of the game
 output line, and it may be anywhere in the output -- line order is not
 checked.
+
+There can be more than one test (marked by asterisk lines). Each test
+starts at the beginning of the game and is a separate run-through.
+
+For more information, see http://eblong.com/zarf/plotex/regtest.html
