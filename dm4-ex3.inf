@@ -1,0 +1,77 @@
+Constant Story "Example 3";
+
+Include "Parser";
+Include "VerbLib";
+
+[ Initialise;
+	location = Kitchen;
+];
+
+Class ObligingDoor
+ with name 'door',
+      react_before [;
+          Go: if (noun.door_dir == self.door_dir)
+                  return self.open_by_myself();
+          Enter: if (noun == self) return self.open_by_myself();
+      ],
+      open_by_myself [ ks;
+          if (self has open) rfalse;
+          print "(first opening ", (the) self, ")^";
+          ks = keep_silent; keep_silent = true;
+          <Open self>; keep_silent = ks;
+          if (self hasnt open) rtrue;
+      ],
+  has door openable lockable static;
+
+Object Kitchen "Kitchen"
+  with
+    description "This is the kitchen.",
+    e_to thedoor,
+  has light;
+
+ObligingDoor -> thedoor "door"
+  with
+	door_dir e_to,
+	door_to Bathroom;
+
+Object Bathroom "Bathroom"
+  with
+    description "This is the bathroom.",
+  has light;
+
+
+Include "Grammar";
+
+#END; ! test
+
+* openfirst
+
+Kitchen
+You can see a door here.
+
+>get door
+That's fixed in place.
+
+>open door
+You open the door.
+
+>e
+Bathroom
+
+* goeast
+
+>east
+(first opening the door)
+Bathroom
+
+* enterdoor
+
+>open door
+You open the door.
+
+>close door
+You close the door.
+
+>enter door
+(first opening the door)
+Bathroom
