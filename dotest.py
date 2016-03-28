@@ -589,12 +589,18 @@ if (not terppath):
     print('No interpreter path specified')
     sys.exit(-1)
 
+# We'll need a global testmap for the list_commands call, which substitutes
+# includes.
+testmap = None
+
 for arg in args:
     try:
         testls = parse_testfile(arg)
+        testmap = dict([(test.name, test) for test in testls])
         gamefile = compile_testfile(arg)
         for test in testls:
             run(test, gamefile)
+        testmap = None
     except Exception as ex:
         print('EXCEPTION: %s: %s' % (arg, ex,))
         totalerrors += 1
