@@ -5,7 +5,7 @@ Include "Parser";
 Include "VerbLib";
 
 [ Initialise;
-	location = Kitchen;
+    location = Kitchen;
 ];
 
 Class Key
@@ -28,46 +28,46 @@ Class ObligingDoor
       has_been_unlocked,
       which_keys_tried,
       before [ key_to_try j bit ks;
-      	Open:
+        Open:
             if (self has locked) {
-            	if (self.has_been_unlocked) {
+                if (self.has_been_unlocked) {
                   key_to_try = self.with_key;
                   if (key_to_try notin player)
-                  	"You have mislaid ", (the) key_to_try,
-                  	" and so cannot unlock ", (the) self, ".";
+                    "You have mislaid ", (the) key_to_try,
+                    " and so cannot unlock ", (the) self, ".";
                   print "(first unlocking ";
-            	}
-            	else {
+                }
+                else {
                   bit=1;
                   objectloop (j ofclass Key)
                   {   if (self.which_keys_tried & bit == 0
                         && j in player) key_to_try = j;
-                  	bit = bit*2;
+                    bit = bit*2;
                   }
                   if (key_to_try == nothing) rfalse;
                   print "(first trying to unlock ";
-            	}
-            	print (the) self, " with ", (the) key_to_try, ")^";
-            	ks = keep_silent; keep_silent = true;
-            	<Unlock self key_to_try>; keep_silent = ks;
-            	if (self has locked) rtrue;
+                }
+                print (the) self, " with ", (the) key_to_try, ")^";
+                ks = keep_silent; keep_silent = true;
+                <Unlock self key_to_try>; keep_silent = ks;
+                if (self has locked) rtrue;
             }
-      	Lock: if (self has open) {
-            	print "(first closing ", (the) self, ")^";
-            	ks = keep_silent; keep_silent = true;
-            	<Close self>; keep_silent = ks;
-            	if (self has open) rtrue;
+        Lock: if (self has open) {
+                print "(first closing ", (the) self, ")^";
+                ks = keep_silent; keep_silent = true;
+                <Close self>; keep_silent = ks;
+                if (self has open) rtrue;
             }
-      	Unlock:
+        Unlock:
             bit=1;
             objectloop (j ofclass Key) {
-            	if (second == j)
+                if (second == j)
                   self.which_keys_tried = self.which_keys_tried + bit;
-            	bit = bit*2;
+                bit = bit*2;
             }
       ],
       after [;
-      	Unlock: self.has_been_unlocked = true;
+        Unlock: self.has_been_unlocked = true;
       ],
   has door openable lockable static;
 
@@ -82,29 +82,29 @@ ObligingDoor -> bluedoor "blue door"
   with
     name 'blue',
     with_key bluekey,
-	door_dir e_to,
-	door_to Bathroom,
+    door_dir e_to,
+    door_to Bathroom,
   has ~open locked;
 
 ObligingDoor -> reddoor "red door"
   with
     name 'red',
     with_key redkey,
-	door_dir s_to,
-	door_to DiningRoom,
+    door_dir s_to,
+    door_to DiningRoom,
   has ~open locked;
 
 Key -> redkey "red key"
   with
-	name 'red';
+    name 'red';
 
 Key -> bluekey "blue key"
   with
-	name 'blue';
+    name 'blue';
 
 Key -> greenkey "green key"
   with
-	name 'green';
+    name 'green';
 
 Object Bathroom "Bathroom"
   with
