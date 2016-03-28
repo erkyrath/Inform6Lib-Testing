@@ -1,0 +1,116 @@
+Constant Story "Example 6";
+Constant Headline "^";
+
+Include "Parser";
+Include "VerbLib";
+
+[ Initialise;
+    location = Kitchen;
+];
+
+Object Kitchen "Kitchen"
+  with
+    description "This is the kitchen.",
+    s_to DiningRoom,
+  has light;
+
+Object DiningRoom "Dining Room"
+  with
+    description "This is the dining room.",
+    n_to Kitchen,
+  has light;
+
+Object wand "wand" selfobj 
+  with
+  	name 'wand',
+  	before [;
+  		Smell:
+  			"The wand smells like wooden wood.";
+  		Wave:
+  			if (parent(orange_cloud) == nothing) {
+  				move orange_cloud to location;
+  				"Orange smoke billows around you!";
+  			}
+  			if (parent(orange_cloud) == location) {
+  				remove orange_cloud;
+  				"The orange smoke dissipates.";
+  			}
+  			else {
+  				remove orange_cloud;
+  			}
+  	];
+
+Object orange_cloud "orange cloud"
+  with name 'orange' 'cloud' 'smoke',
+       react_before [;
+           Look: "You can't see for the orange cloud surrounding you.";
+           Go, Exit: "You wander round in circles, choking.";
+           Smell: if (noun == nothing or self) "Cinnamon? No, nutmeg.";
+       ],
+  has  scenery;
+
+Include "Grammar";
+
+#END; ! test
+
+* test
+
+Kitchen
+This is the kitchen.
+
+>s
+
+Dining Room
+This is the dining room.
+
+>n
+Kitchen
+
+>smell wand
+The wand smells like wooden wood.
+
+>out
+But you aren't in anything at the moment.
+
+>wave wand
+Orange smoke billows around you!
+
+>l
+You can't see for the orange cloud surrounding you.
+!Kitchen
+!kitchen
+
+>out
+You wander round in circles, choking.
+
+>s
+You wander round in circles, choking.
+
+>e
+You wander round in circles, choking.
+
+>smell
+Cinnamon? No, nutmeg.
+
+>wave wand
+The orange smoke dissipates.
+
+>look
+Kitchen
+!orange
+
+>smell
+You smell nothing unexpected.
+
+>s
+Dining Room
+
+>out 
+But you aren't in anything at the moment.
+
+>wave wand
+Orange smoke billows around you!
+
+>north
+You wander round in circles, choking.
+
