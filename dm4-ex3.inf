@@ -5,7 +5,7 @@ Include "Parser";
 Include "VerbLib";
 
 [ Initialise;
-	location = Kitchen;
+    location = Kitchen;
 ];
 
 Class ObligingDoor
@@ -32,8 +32,8 @@ Object Kitchen "Kitchen"
 
 ObligingDoor -> thedoor "door"
   with
-	door_dir e_to,
-	door_to Bathroom;
+    door_dir e_to,
+    door_to Bathroom;
 
 Object Bathroom "Bathroom"
   with
