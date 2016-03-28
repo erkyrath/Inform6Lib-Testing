@@ -1,0 +1,136 @@
+Constant Story "Example 8";
+Constant Headline "^";
+
+Include "Parser";
+Include "VerbLib";
+
+[ Initialise;
+    location = Square_Chamber;
+];
+
+! All three normal rooms allow you to go "south" to return to the 
+! Square Chamber. This lets us reset the test with a minimum of fuss.
+
+Object Square_Chamber "Square Chamber"
+  with
+    description "You are in a square chamber.",
+    u_to Wormcast,
+    s_to Square_Chamber,
+    e_to Corridor,
+    w_to Forest,
+  has light;
+
+Object Corridor "Corridor"
+  with
+    description "You are in a boring corridor.",
+    s_to Square_Chamber,
+    w_to Square_Chamber,
+  has light;
+
+Object Forest "Forest"
+  with
+    description "You are in the forest.",
+    s_to Square_Chamber,
+    e_to Square_Chamber,
+  has light;
+
+Object Wormcast "Wormcast"
+  with description
+           "A disturbed place of hollows carved like a spider's web,
+           strands of empty space hanging in stone. The only burrows
+           wide enough to crawl through begin by running northeast,
+           south and upwards.",
+       w_to Square_Chamber,
+       ne_to [; return self.s_to(); ],
+       u_to [; return self.s_to(); ],
+       s_to [;
+           print "The wormcast becomes slippery around you, as though
+               your body-heat is melting long hardened resins, and
+               you shut your eyes tightly as you burrow through
+               darkness.^";
+           if (eggsac in player) return Square_Chamber;
+           return random(Square_Chamber, Corridor, Forest);
+       ],
+       cant_go "Though you feel certain that something lies behind
+           the wormcast, this way is impossible.",
+  has light;
+
+Object -> eggsac "eggsac"
+  with
+  	name 'egg' 'sac' 'eggsac';
+
+Include "Grammar";
+
+#END; ! test
+
+* test
+
+Square Chamber
+
+>u
+Wormcast
+A disturbed place of hollows carved like a spider's web
+You can see an eggsac here.
+
+>w
+Square Chamber
+
+>u
+Wormcast
+
+>e
+Though you feel certain that something lies behind the wormcast, this way is impossible.
+
+>u
+The wormcast becomes slippery around you, as though your body-heat is melting long hardened resins, and you shut your eyes tightly as you burrow through darkness.
+/(Square|Forest|Corridor)
+
+>s
+Square Chamber
+
+>u
+Wormcast
+
+>u
+The wormcast becomes slippery around you
+/(Square|Forest|Corridor)
+
+>s
+Square Chamber
+
+>u
+Wormcast
+
+>ne
+The wormcast becomes slippery around you
+/(Square|Forest|Corridor)
+
+>s
+Square Chamber
+
+>u
+Wormcast
+
+>get eggsac
+Taken
+
+>ne
+Square Chamber
+
+>u
+Wormcast
+
+>u
+Square Chamber
+
+>u
+Wormcast
+
+>s
+Square Chamber
+
+# This test just repeats the previous test! Since the random exit is
+# probabilistic, I figured it would be nice to be safe.
+* repeattest
+
+>{include} test
