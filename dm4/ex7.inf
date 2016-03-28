@@ -18,20 +18,20 @@ Object Wormcast "Wormcast"
   with
     description "You are in Wormcast.",
     d_to Square_Chamber,
-	after [;
-		Drop: move noun to Square_Chamber;
-			print_ret (The) noun, " slips through one of the burrows
-				and is quickly lost from sight.";
-	],
+    after [;
+        Drop: move noun to Square_Chamber;
+            print_ret (The) noun, " slips through one of the burrows
+                and is quickly lost from sight.";
+    ],
   has light;
 
 Object wand "wand" selfobj 
   with
-  	name 'wand';
+    name 'wand';
 
 Object knife "knife" selfobj 
   with
-  	name 'knife';
+    name 'knife';
 
 Include "Grammar";
 

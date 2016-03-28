@@ -22,23 +22,23 @@ Object DiningRoom "Dining Room"
 
 Object wand "wand" selfobj 
   with
-  	name 'wand',
-  	before [;
-  		Smell:
-  			"The wand smells like wooden wood.";
-  		Wave:
-  			if (parent(orange_cloud) == nothing) {
-  				move orange_cloud to location;
-  				"Orange smoke billows around you!";
-  			}
-  			if (parent(orange_cloud) == location) {
-  				remove orange_cloud;
-  				"The orange smoke dissipates.";
-  			}
-  			else {
-  				remove orange_cloud;
-  			}
-  	];
+    name 'wand',
+    before [;
+        Smell:
+            "The wand smells like wooden wood.";
+        Wave:
+            if (parent(orange_cloud) == nothing) {
+                move orange_cloud to location;
+                "Orange smoke billows around you!";
+            }
+            if (parent(orange_cloud) == location) {
+                remove orange_cloud;
+                "The orange smoke dissipates.";
+            }
+            else {
+                remove orange_cloud;
+            }
+    ];
 
 Object orange_cloud "orange cloud"
   with name 'orange' 'cloud' 'smoke',
