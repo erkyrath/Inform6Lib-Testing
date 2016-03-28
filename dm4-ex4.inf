@@ -1,0 +1,270 @@
+Constant Story "Example 4";
+Constant Headline "^";
+
+Include "Parser";
+Include "VerbLib";
+
+[ Initialise;
+	location = Kitchen;
+];
+
+Class Key
+ with name 'key';
+
+Class ObligingDoor
+ with name 'door',
+      react_before [;
+          Go: if (noun.door_dir == self.door_dir)
+                  return self.open_by_myself();
+          Enter: if (noun == self) return self.open_by_myself();
+      ],
+      open_by_myself [ ks;
+          if (self has open) rfalse;
+          print "(first opening ", (the) self, ")^";
+          ks = keep_silent; keep_silent = true;
+          <Open self>; keep_silent = ks;
+          if (self hasnt open) rtrue;
+      ],
+      has_been_unlocked,
+      which_keys_tried,
+      before [ key_to_try j bit ks;
+      	Open:
+            if (self has locked) {
+            	if (self.has_been_unlocked) {
+                  key_to_try = self.with_key;
+                  if (key_to_try notin player)
+                  	"You have mislaid ", (the) key_to_try,
+                  	" and so cannot unlock ", (the) self, ".";
+                  print "(first unlocking ";
+            	}
+            	else {
+                  bit=1;
+                  objectloop (j ofclass Key)
+                  {   if (self.which_keys_tried & bit == 0
+                        && j in player) key_to_try = j;
+                  	bit = bit*2;
+                  }
+                  if (key_to_try == nothing) rfalse;
+                  print "(first trying to unlock ";
+            	}
+            	print (the) self, " with ", (the) key_to_try, ")^";
+            	ks = keep_silent; keep_silent = true;
+            	<Unlock self key_to_try>; keep_silent = ks;
+            	if (self has locked) rtrue;
+            }
+      	Lock: if (self has open) {
+            	print "(first closing ", (the) self, ")^";
+            	ks = keep_silent; keep_silent = true;
+            	<Close self>; keep_silent = ks;
+            	if (self has open) rtrue;
+            }
+      	Unlock:
+            bit=1;
+            objectloop (j ofclass Key) {
+            	if (second == j)
+                  self.which_keys_tried = self.which_keys_tried + bit;
+            	bit = bit*2;
+            }
+      ],
+      after [;
+      	Unlock: self.has_been_unlocked = true;
+      ],
+  has door openable lockable static;
+
+Object Kitchen "Kitchen"
+  with
+    description "This is the kitchen. The blue door is east and the red door is south.",
+    e_to bluedoor,
+    s_to reddoor,
+  has light;
+
+ObligingDoor -> bluedoor "blue door"
+  with
+    name 'blue',
+    with_key bluekey,
+	door_dir e_to,
+	door_to Bathroom,
+  has ~open locked;
+
+ObligingDoor -> reddoor "red door"
+  with
+    name 'red',
+    with_key redkey,
+	door_dir s_to,
+	door_to DiningRoom,
+  has ~open locked;
+
+Key -> redkey "red key"
+  with
+	name 'red';
+
+Key -> bluekey "blue key"
+  with
+	name 'blue';
+
+Key -> greenkey "green key"
+  with
+	name 'green';
+
+Object Bathroom "Bathroom"
+  with
+    description "This is the bathroom.",
+    w_to Kitchen,  ! bypasses door
+  has light;
+
+Object DiningRoom "Dining Room"
+  with
+    description "This is the dining room.",
+    n_to Kitchen,  ! bypasses door
+  has light;
+
+Include "Grammar";
+
+#END; ! test
+
+
+* test
+
+Kitchen
+This is the kitchen. The blue door is east and the red door is south.
+You can see a blue door, a red door, a red key, a blue key and a green key here.
+
+>e
+(first opening the blue door)
+It seems to be locked.
+
+>s
+(first opening the red door)
+It seems to be locked.
+
+>get green key
+Taken.
+
+>e
+(first opening the blue door)
+(first trying to unlock the blue door with the green key)
+That doesn't seem to fit the lock.
+
+>s
+(first opening the red door)
+(first trying to unlock the red door with the green key)
+That doesn't seem to fit the lock.
+
+>get red key
+Taken.
+
+>e
+(first opening the blue door)
+(first trying to unlock the blue door with the red key)
+That doesn't seem to fit the lock.
+
+>s
+(first opening the red door)
+(first trying to unlock the red door with the red key)
+Dining Room
+
+>n
+Kitchen
+
+>e
+(first opening the blue door)
+It seems to be locked.
+
+>close red door
+You close the red door.
+
+>lock it with red key
+You lock the red door.
+
+>s
+(first opening the red door)
+(first unlocking the red door with the red key)
+Dining Room
+
+>n   
+Kitchen
+
+>close red door
+You close the red door.
+
+>lock red door with red key
+You lock the red door.
+
+>drop red key
+Dropped.
+
+>s
+(first opening the red door)
+You have mislaid the red key and so cannot unlock the red door.
+
+>get blue key
+Taken.
+
+>s
+(first opening the red door)
+You have mislaid the red key and so cannot unlock the red door.
+
+>e
+(first opening the blue door)
+(first trying to unlock the blue door with the blue key)
+
+Bathroom
+
+
+* test2
+
+Kitchen
+This is the kitchen. The blue door is east and the red door is south.
+You can see a blue door, a red door, a red key, a blue key and a green key here.
+
+>get red key
+Taken.
+
+>get blue key
+Taken.
+
+>s
+(first opening the red door)
+(first trying to unlock the red door with the blue key)
+That doesn't seem to fit the lock.
+
+>s
+(first opening the red door)
+(first trying to unlock the red door with the red key)
+Dining Room
+
+>n
+Kitchen
+
+>close red door
+You close the red door.
+
+>lock red door with blue key
+That doesn't seem to fit the lock.
+
+>lock red door with red key
+You lock the red door.
+
+>drop red key
+Dropped.
+
+>get green key
+Taken.
+
+>s
+(first opening the red door)
+You have mislaid the red key and so cannot unlock the red door.
+
+>s
+(first opening the red door)
+You have mislaid the red key and so cannot unlock the red door.
+
+>e
+(first opening the blue door)
+(first trying to unlock the blue door with the green key)
+That doesn't seem to fit the lock.
+
+>e
+(first opening the blue door)
+(first trying to unlock the blue door with the blue key)
+Bathroom
