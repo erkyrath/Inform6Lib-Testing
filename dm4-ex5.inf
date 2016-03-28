@@ -1,0 +1,81 @@
+Constant Story "Example 5";
+Constant Headline "^";
+
+Include "Parser";
+Include "VerbLib";
+
+[ GamePreRoutine;
+    if (second && second ofclass Object) {
+        if (second provides second_before) {
+            return second.second_before();
+        }
+    }
+    rfalse;
+];
+
+[ Initialise;
+    location = Kitchen;
+];
+
+Object Kitchen "Kitchen"
+  with
+    description "This is the kitchen.",
+  has light;
+
+Object -> target "target"
+  with
+    name 'target' 'dartboard' 'board',
+    description "An ordinary bullseye dartboard.",
+    second_before [;
+        ThrowAt:
+            if (noun == dart) {
+                remove dart;
+                "The dart explodes on contact.";
+            }
+    ];
+
+Object -> dart "dart"
+  with
+    name 'dart';
+
+Object -> key "key"
+  with
+    name 'key';
+
+Include "Grammar";
+
+#END; ! test
+
+* test
+
+Kitchen
+You can see a target, a dart and a key here.
+
+>x target
+An ordinary bullseye dartboard.
+
+>get dart
+Taken.
+
+>unlock target with dart
+That doesn't seem to be something you can unlock.
+
+>throw dart at key
+Futile.
+
+>throw dart at target
+The dart explodes on contact.
+
+>x dart
+You can't see any such thing.
+
+>get key
+Taken.
+
+>unlock target with key
+That doesn't seem to be something you can unlock.
+
+>i
+You are carrying:
+  a key
+
