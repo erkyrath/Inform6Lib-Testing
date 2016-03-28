@@ -1,0 +1,76 @@
+Constant Story "Example 7";
+Constant Headline "^";
+
+Include "Parser";
+Include "VerbLib";
+
+[ Initialise;
+    location = Square_Chamber;
+];
+
+Object Square_Chamber "Square Chamber"
+  with
+    description "You are in a square chamber.",
+    u_to Wormcast,
+  has light;
+
+Object Wormcast "Wormcast"
+  with
+    description "You are in Wormcast.",
+    d_to Square_Chamber,
+	after [;
+		Drop: move noun to Square_Chamber;
+			print_ret (The) noun, " slips through one of the burrows
+				and is quickly lost from sight.";
+	],
+  has light;
+
+Object wand "wand" selfobj 
+  with
+  	name 'wand';
+
+Object knife "knife" selfobj 
+  with
+  	name 'knife';
+
+Include "Grammar";
+
+#END; ! test
+
+* test
+
+Square Chamber
+
+>drop wand
+Dropped.
+
+>get wand
+Taken.
+
+>u
+Wormcast
+
+>drop wand
+The wand slips through one of the burrows and is quickly lost from sight.
+
+>drop knife
+The knife slips through one of the burrows and is quickly lost from sight.
+
+>d
+Square Chamber
+You can see a knife and a wand here.
+
+>get all
+knife: Taken.
+wand: Taken.
+
+>u
+Wormcast
+
+>drop all
+wand: The wand slips through one of the burrows and is quickly lost from sight.
+knife: The knife slips through one of the burrows and is quickly lost from sight.
+
+>d
+Square Chamber
+You can see a knife and a wand here.
