@@ -57,7 +57,7 @@ Object Wormcast "Wormcast"
 
 Object -> eggsac "eggsac"
   with
-  	name 'egg' 'sac' 'eggsac';
+    name 'egg' 'sac' 'eggsac';
 
 Include "Grammar";
 
