@@ -1,5 +1,5 @@
-Constant Story "Null";
-Constant Headline "^Not a game.^";
+Constant Story "Minimal";
+Constant Headline "^Headline.^";
 
 Include "Parser";
 Include "VerbLib";
@@ -19,8 +19,8 @@ Include "Grammar";
 
 * general
 
-Null
-Not a game.
+Minimal
+Headline.
 Kitchen
 The Kitchen.
 
@@ -37,8 +37,8 @@ You jump on the spot, fruitlessly.
 * more
 
 >version
-Null
-Not a game.
+Minimal
+Headline.
 Release 1
 
 >n
