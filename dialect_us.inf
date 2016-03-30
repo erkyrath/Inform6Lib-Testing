@@ -1,0 +1,38 @@
+Constant Story "Dialect-US";
+Constant Headline "^";
+
+Constant DIALECT_US;
+
+Include "Parser";
+Include "VerbLib";
+
+[ Initialise;
+  location = Kitchen;
+];
+
+Object Kitchen "Kitchen"
+  with
+    description "The Kitchen.",
+  has light;
+
+Object -> leaves "pile of leaves"
+  with
+    name 'pile' 'of' 'leaves',
+    description [;
+        print_ret "There are ", (LanguageNumber) 9125, " leaves.";
+    ];
+  
+Include "Grammar";
+
+#end; ! test
+
+* test
+
+>xyzzy
+That's not a verb I recognize.
+
+>sorry
+Oh, don't apologize.
+
+>x leaves
+There are nine thousand, one hundred twenty-five leaves.
