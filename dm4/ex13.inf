@@ -1,0 +1,107 @@
+Constant Story "Example 13";
+Constant Headline "^";
+
+Include "Parser";
+Include "VerbLib";
+
+[ Initialise x;
+
+    objectloop (x ofclass Room) {
+        TwoWay(x, n_to, s_to);   TwoWay(x, e_to, w_to);
+        TwoWay(x, ne_to, sw_to); TwoWay(x, nw_to, se_to);
+        TwoWay(x, u_to, d_to);   TwoWay(x, in_to, out_to);
+    }
+    
+    location = Square_Chamber;
+];
+
+Class Room
+  with n_to, e_to, w_to, s_to, ne_to, nw_to, se_to, sw_to,
+       in_to, out_to, u_to, d_to;
+
+[ TwoWay x dp1 dp2 y;
+  y = x.dp1; if (metaclass(y) == Object && y ofclass Room) y.dp2 = x;
+  y = x.dp2; if (metaclass(y) == Object && y ofclass Room) y.dp1 = x;
+];
+
+Room Square_Chamber "Square Chamber"
+  with
+    description "You are in a square chamber.",
+    e_to Corridor,
+    s_to Forest,
+    se_to Wormcast,
+    in_to Hut,
+  has light;
+
+Room Corridor "Corridor"
+  with
+    description "You are in a boring corridor.",
+    w_to Square_Chamber,
+    s_to Wormcast,
+    sw_to Forest,
+  has light;
+
+Room Forest "Forest"
+  with
+    description "You are in the forest.",
+    e_to Wormcast,
+  has light;
+
+Room Wormcast "Wormcast"
+  with
+    description "You are in Wormcast.",
+  has light;
+
+Object -> eggsac "eggsac"
+  with
+    name 'egg' 'sac' 'eggsac';
+
+Room Hut "Hut"
+  with
+    description "You are in a small hut.",
+  has light;
+
+Include "Grammar";
+
+#END; ! test
+
+* test
+
+Square Chamber
+
+>e
+Corridor
+
+>s
+Wormcast
+You can see an eggsac here.
+
+>w
+Forest
+
+>n
+Square Chamber
+
+>se
+Wormcast
+
+>nw
+Square Chamber
+
+>in
+Hut
+
+>out
+Square Chamber
+
+>out
+But you aren't in anything at the moment.
+
+>s
+Forest
+
+>ne
+Corridor
+
+>w
+Square Chamber
