@@ -1,0 +1,103 @@
+Constant Story "Example 9";
+Constant Headline "^";
+
+Include "Parser";
+Include "VerbLib";
+
+CompassDirection white_obj "white wall" compass
+  with name 'white' 'sac' 'wall', door_dir n_to;
+
+CompassDirection yellow_obj "yellow wall" compass
+  with name 'yellow' 'kan' 'wall', door_dir s_to;
+
+CompassDirection red_obj "red wall" compass
+  with name 'red' 'chac' 'wall', door_dir e_to;
+
+CompassDirection black_obj "black wall" compass
+  with name 'black' 'chikin' 'wall', door_dir w_to;
+
+[ Initialise;
+    location = Square_Chamber;
+    remove n_obj; remove e_obj; remove w_obj; remove s_obj;
+];
+
+Object Square_Chamber "Square Chamber"
+  with
+    description "You are in a square chamber.",
+    e_to Corridor,
+    s_to Forest,
+  has light;
+
+Object Corridor "Corridor"
+  with
+    description "You are in a boring corridor.",
+    w_to Square_Chamber,
+    s_to Wormcast,
+  has light;
+
+Object Forest "Forest"
+  with
+    description "You are in the forest.",
+    n_to Square_Chamber,
+    e_to Wormcast,
+  has light;
+
+Object Wormcast "Wormcast"
+  with
+    description "You are in Wormcast.",
+    n_to Corridor,
+    w_to Forest,
+  has light;
+
+Object -> eggsac "eggsac"
+  with
+    name 'egg' 'sac' 'eggsac';
+
+Include "Grammar";
+
+Verb 'turquoise' 'yax' * -> Look;
+
+#END; ! test
+
+* test
+
+Square Chamber
+
+>n
+That's not a verb I recognise.
+
+>s
+That's not a verb I recognise.
+
+>e
+That's not a verb I recognise.
+
+>w
+That's not a verb I recognise.
+
+>sac
+You can't go that way.
+
+>red
+Corridor
+
+>go yellow
+Wormcast
+You can see an eggsac here.
+
+>turquoise
+Wormcast
+You can see an eggsac here.
+
+>yax
+Wormcast
+You can see an eggsac here.
+
+>enter black wall
+Forest
+
+>sac
+Square Chamber
+
+>black
+You can't go that way.

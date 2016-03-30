@@ -1,0 +1,56 @@
+Constant Story "Example 10";
+Constant Headline "^";
+
+Include "Parser";
+Include "VerbLib";
+
+Property xyzzy_to;
+
+CompassDirection xyzzy_obj "magic word" compass
+  with name 'xyzzy', door_dir xyzzy_to;
+
+[ Initialise;
+    location = Square_Chamber;
+];
+
+Object Square_Chamber "Square Chamber"
+  with
+    description "You are in a square chamber.",
+    e_to Corridor,
+    xyzzy_to Y2,
+  has light;
+
+Object Corridor "Corridor"
+  with
+    description "You are in a boring corridor.",
+    w_to Square_Chamber,
+  has light;
+
+Object Y2 "Y2 Junction"
+  with
+    description "You are in a small cave. ~Y2~ is inscribed on a boulder.",
+    xyzzy_to Square_Chamber,
+  has light;
+
+Include "Grammar";
+
+#END; ! test
+
+* test
+
+Square Chamber
+
+>xyzzy
+Y2 Junction
+
+>e  
+You can't go that way.
+
+>xyzzy
+Square Chamber
+
+>e
+Corridor
+
+>xyzzy
+You can't go that way.
