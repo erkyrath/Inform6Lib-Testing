@@ -1,0 +1,151 @@
+Constant Story "Example 12";
+Constant Headline "^";
+
+Include "Parser";
+Include "VerbLib";
+
+[ Initialise;
+    NormalWorld();
+    location = Square_Chamber;
+];
+
+[ SwapDirs o1 o2 x;
+    x = o1.door_dir; o1.door_dir = o2.door_dir; o2.door_dir = x;
+];
+
+[ ReflectWorld;
+    SwapDirs(e_obj, w_obj);
+    SwapDirs(ne_obj, nw_obj);
+    SwapDirs(se_obj, sw_obj);
+];
+
+[ NormalWorld; string 0 "east"; string 1 "west"; ];
+[ ReversedWorld; string 0 "west"; string 1 "east"; ];
+
+Object wand "wand" selfobj 
+  with
+    name 'wand',
+    before [;
+        Wave:
+            if (wand hasnt general) {
+                give wand general;
+                ReflectWorld();
+                ReversedWorld();
+                "The world swaps itself around you.";
+            }
+            else {
+                give wand ~general;
+                ReflectWorld();
+                NormalWorld();
+                "The world rights itself.";
+            }
+    ];
+
+Object Square_Chamber "Square Chamber"
+  with
+    description "You are in a square chamber. A corridor is @00, a forest is south, and Wormcast is south@00.",
+    e_to Corridor,
+    s_to Forest,
+    se_to Wormcast,
+  has light;
+
+Object Corridor "Corridor"
+  with
+    description "You are in a boring corridor. The square chamber is @01, Wormcast is south, and a forest is south@01.",
+    w_to Square_Chamber,
+    s_to Wormcast,
+    sw_to Forest,
+  has light;
+
+Object Forest "Forest"
+  with
+    description "You are in the forest. The square chamber is north, Wormcast is @00, and the corridor is north@00.",
+    n_to Square_Chamber,
+    e_to Wormcast,
+    ne_to Corridor,
+  has light;
+
+Object Wormcast "Wormcast"
+  with
+    description "You are in Wormcast. The corridor is north, the forest is @01, and the square chamber is north@01.",
+    n_to Corridor,
+    w_to Forest,
+    nw_to Square_Chamber,
+  has light;
+
+Object -> eggsac "eggsac"
+  with
+    name 'egg' 'sac' 'eggsac';
+
+Include "Grammar";
+
+#END; ! test
+
+* test
+
+Square Chamber
+You are in a square chamber. A corridor is east, a forest is south, and Wormcast is southeast.
+
+>verbose
+now in its "verbose" mode
+
+>e
+Corridor
+You are in a boring corridor. The square chamber is west, Wormcast is south, and a forest is southwest.
+
+>s
+Wormcast
+You are in Wormcast. The corridor is north, the forest is west, and the square chamber is northwest.
+You can see an eggsac here.
+
+>w
+Forest
+You are in the forest. The square chamber is north, Wormcast is east, and the corridor is northeast.
+
+>n
+Square Chamber
+You are in a square chamber. A corridor is east, a forest is south, and Wormcast is southeast.
+
+>wave wand
+The world swaps itself around you.
+
+>look
+Square Chamber
+You are in a square chamber. A corridor is west, a forest is south, and Wormcast is southwest.
+
+>w
+Corridor
+You are in a boring corridor. The square chamber is east, Wormcast is south, and a forest is southeast.
+
+>s
+Wormcast
+You are in Wormcast. The corridor is north, the forest is east, and the square chamber is northeast.
+
+>e
+Forest
+You are in the forest. The square chamber is north, Wormcast is west, and the corridor is northwest.
+
+>n
+Square Chamber
+You are in a square chamber. A corridor is west, a forest is south, and Wormcast is southwest.
+
+>wave wand
+The world rights itself.
+
+>look
+Square Chamber
+You are in a square chamber. A corridor is east, a forest is south, and Wormcast is southeast.
+
+>se
+Wormcast
+You are in Wormcast. The corridor is north, the forest is west, and the square chamber is northwest.
+
+>wave wand
+The world swaps itself around you.
+
+>look
+You are in Wormcast. The corridor is north, the forest is east, and the square chamber is northeast.
+
+>ne
+Square Chamber
+You are in a square chamber. A corridor is west, a forest is south, and Wormcast is southwest.
