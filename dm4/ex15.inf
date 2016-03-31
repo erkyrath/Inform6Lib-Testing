@@ -1,0 +1,78 @@
+Constant Story "Example 15";
+Constant Headline "^";
+
+Include "Parser";
+Include "VerbLib";
+
+[ Initialise;
+    location = Kitchen;
+];
+
+Object Kitchen "Kitchen"
+  with
+    description "This is the kitchen.",
+  has light;
+
+Object -> "musical box",
+  with name 'musical' 'box',
+       with_key silver_key,
+       capacity 1,
+  has  lockable locked openable container;
+
+Object -> -> "score of a song" 
+  with name 'score' 'music' 'song',
+       article "the",
+       description "~The Return of Giant Hogweed~.";
+
+Object -> silver_key "silver key"
+  with name 'silver' 'key';
+
+Object -> stick "stick"
+  with name 'stick';
+
+Include "Grammar";
+
+#END; ! test
+
+* test
+
+Kitchen
+You can see a musical box (which is closed), a silver key and a stick here.
+
+>open box
+It seems to be locked.
+
+>unlock box with stick
+(first taking the stick)
+That doesn't seem to fit the lock.
+
+>close box
+That's already closed.
+
+>open box with key
+(first taking the silver key)
+You unlock the musical box.
+
+>open box
+You open the musical box, revealing the score of a song.
+
+>get score
+Taken.
+
+>lock box with stick
+First you'll have to close the musical box.
+
+>lock box with key
+First you'll have to close the musical box.
+
+>close box
+You close the musical box.
+
+>lock box with stick
+That doesn't seem to fit the lock.
+
+>lock box with key
+You lock the musical box.
+
+>open box
+It seems to be locked.
