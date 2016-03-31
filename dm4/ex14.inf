@@ -1,0 +1,217 @@
+Constant Story "Example 14";
+Constant Headline "^";
+
+Include "Parser";
+Include "VerbLib";
+
+[ Initialise;
+    location = Kitchen;
+];
+
+Object Bathroom "Bathroom"
+  with
+    description "This is the bathroom.",
+    w_to Kitchen,
+  has light;
+
+Object Kitchen "Kitchen"
+  with
+    description "This is the kitchen.",
+    e_to Bathroom,
+  has light;
+
+Object -> drawer "drawer"
+  with
+    name 'drawer',
+  has static container open;
+
+Class Glove
+  with name 'white' 'glove' 'silk',
+       article "the",
+       react_before [;
+           if (self in gloves) rfalse;
+           if (parent(right_glove) ~= parent(left_glove)) rfalse;
+           if (left_glove has worn && right_glove hasnt worn) rfalse;
+           if (left_glove hasnt worn && right_glove has worn) rfalse;
+           if (left_glove has worn) give gloves worn;
+           else give gloves ~worn;
+           move gloves to parent(right_glove);
+           move right_glove to gloves; move left_glove to gloves;
+           give right_glove ~worn; give left_glove ~worn;
+       ],
+       before [;
+           if (self notin gloves) rfalse;
+           move left_glove to parent(gloves);
+           move right_glove to parent(gloves);
+           if (gloves has worn) {
+               give left_glove worn; give right_glove worn;
+           }
+           remove gloves;
+       ],
+  has  clothing;
+
+Object -> gloves "white gloves"
+  with name 'white' 'gloves' 'pair' 'of',
+       article "a pair of",
+  has  clothing transparent;
+
+Glove -> -> left_glove "left glove"
+  with description "White silk, monogrammed with a scarlet R.",
+       name 'left';
+
+Glove -> -> right_glove "right glove"
+  with description "White silk, monogrammed with a scarlet T.",
+       name 'right';
+
+Include "Grammar";
+
+#END; ! test
+
+* takedrop
+
+Kitchen
+You can see a drawer (which is empty) and a pair of white gloves here.
+
+>get gloves
+Taken.
+
+>i
+You are carrying:
+  a pair of white gloves
+
+>drop left glove
+Dropped.
+
+>i
+You are carrying:
+  the right glove
+
+>l
+You can see the left glove and a drawer (which is empty) here.
+
+>drop right glove
+Dropped.
+
+>l
+You can see a pair of white gloves and a drawer (which is empty) here.
+
+>i
+You are carrying nothing.
+
+>get pair
+Taken.
+
+>put pair of gloves in drawer
+You put the white gloves into the drawer.
+
+>l
+You can see a drawer (in which is a pair of white gloves) here.
+
+>get left glove
+Taken.
+
+>l
+You can see a drawer (in which is the right glove) here.
+
+>e
+Bathroom
+
+>drop glove
+Dropped.
+
+>l
+Bathroom
+You can see the left glove here.
+
+>w
+Kitchen
+You can see a drawer (in which is the right glove) here.
+
+>get glove
+Taken.
+
+>drop glove
+Dropped.
+
+>l
+You can see the right glove and a drawer (which is empty) here.
+
+>get glove
+Taken.
+
+>e
+Bathroom
+You can see the left glove here.
+
+>drop glove
+(the right glove)
+Dropped.
+
+>l
+You can see a pair of white gloves here.
+
+
+* wear
+
+Kitchen
+This is the kitchen.
+You can see a drawer (which is empty) and a pair of white gloves here.
+
+>wear pair
+(first taking the white gloves)
+You put on the white gloves.
+
+>i
+You are carrying:
+  a pair of white gloves (being worn)
+
+>remove left glove
+(first taking the left glove)
+You take off the left glove.
+
+>i
+You are carrying:
+  the right glove (being worn)
+  the left glove
+
+>drop left
+Dropped.
+
+>l
+You can see the left glove and a drawer (which is empty) here.
+
+>remove right glove 
+You take off the right glove.
+
+>i
+You are carrying:
+  the right glove
+
+>x pair
+You can't see any such thing.
+
+>wear left glove
+(first taking the left glove)
+You put on the left glove.
+
+>i
+You are carrying:
+  the right glove
+  the left glove (being worn)
+
+>x pair
+You can't see any such thing.
+
+>l
+You can see a drawer (which is empty) here.
+!glove
+
+>wear right
+You put on the right glove.
+
+>i
+You are carrying:
+  a pair of white gloves (being worn)
+
+>x pair
+You see nothing special about the white gloves.
