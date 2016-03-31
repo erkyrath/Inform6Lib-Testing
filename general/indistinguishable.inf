@@ -1,0 +1,143 @@
+Constant Story "Dialect-US";
+Constant Headline "^";
+
+Constant DIALECT_US;
+
+Include "Parser";
+Include "VerbLib";
+
+[ Initialise;
+  location = Kitchen;
+];
+
+Class GoldCoin
+  with name 'gold' 'coin' 'coins//p',
+       short_name "gold coin",
+       plural "gold coins";
+
+Class SilverCoin
+  with name 'silver' 'coin' 'coins//p',
+       short_name "silver coin",
+       plural "silver coins";
+  
+Class CopperCoin
+  with name 'copper' 'coin' 'coins//p',
+       short_name "copper coin",
+       plural "copper coins";
+
+Object Kitchen "Kitchen"
+  with
+    description "The Kitchen.",
+  has light;
+
+Object -> bag "bag"
+  with name 'bag',
+  has  container open openable;
+GoldCoin -> ->;
+GoldCoin -> ->;
+GoldCoin -> ->;
+SilverCoin -> ->;
+SilverCoin -> ->;
+CopperCoin -> ->;
+
+Include "Grammar";
+
+#end; ! test
+
+* test
+Kitchen
+You can see a bag (in which are three gold coins, two silver coins and a copper coin) here.
+
+>get gold coins
+gold coin: Taken.
+gold coin: Taken.
+gold coin: Taken.
+# The test apparatus can't distinguish one of these lines from three, so this test isn't as definitive as it looks. That's why we keep doing "look" and "inv".
+
+>i
+You are carrying:
+  three gold coins
+
+>drop two coins
+gold coin: Dropped.
+gold coin: Dropped.
+
+>i
+You are carrying:
+  a gold coin
+
+>l
+You can see two gold coins and a bag (in which are two silver coins and a copper coin) here.
+
+>get all coins
+gold coin: Taken.
+gold coin: Taken.
+
+>i
+You are carrying:
+  three gold coins
+
+>remove silver coins from bag
+silver coin: Removed.
+silver coin: Removed.
+
+>i
+You are carrying:
+  two silver coins
+  three gold coins
+
+>drop two gold
+gold coin: Dropped.
+gold coin: Dropped.
+
+>l
+You can see two gold coins and a bag (in which is a copper coin) here.
+
+>get a coin 
+(the gold coin)
+Taken.
+
+>i
+You are carrying:
+  two gold coins
+  two silver coins
+
+>remove coin from bag
+Removed.
+
+>i
+You are carrying:
+  a copper coin
+  two gold coins
+  two silver coins
+
+>l
+You can see a gold coin and a bag (which is empty) here.
+
+>drop coins
+copper coin: Dropped.
+gold coin: Dropped.
+silver coin: Dropped.
+silver coin: Dropped.
+gold coin: Dropped.
+
+>l
+Kitchen
+The Kitchen.
+
+You can see three gold coins, two silver coins, a copper coin and a bag (which is empty) here.
+
+>i
+You are carrying nothing.
+
+>get four coins
+gold coin: Taken.
+silver coin: Taken.
+silver coin: Taken.
+gold coin: Taken.
+# Exactly which coins are taken is not guaranteed by the library, but it's stable based on the previous order of operations.
+
+>i
+You are carrying:
+  two gold coins
+  two silver coins
