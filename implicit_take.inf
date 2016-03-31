@@ -1,0 +1,108 @@
+Constant Story "Dialect-US";
+Constant Headline "^";
+
+Constant DIALECT_US;
+
+Include "Parser";
+Include "VerbLib";
+
+[ Initialise;
+  location = Kitchen;
+];
+
+Object Kitchen "Kitchen"
+  with
+    description "The Kitchen.",
+  has light;
+
+Object -> table "table"
+  with
+    name 'table',
+  has static supporter;
+  
+Object -> purse "purse"
+  with
+    name 'purse',
+  has container openable open;
+  
+Object -> -> coin "coin"
+  with
+    name 'coin';
+  
+Object -> lamp "lamp"
+  with
+    name 'lamp';
+  
+Include "Grammar";
+
+#end; ! test
+
+* test
+
+>take lamp
+Taken.
+
+>drop lamp
+Dropped.
+
+>drop lamp
+The lamp is already here.
+# No implicit take for "drop"; that would be silly.
+
+>put lamp on table
+You need to be holding the lamp before you can put it on top of something else.
+# This could use implicit take, but the 6/11 library doesn't do it.
+
+>eat lamp
+(first taking the lamp)
+That's plainly inedible.
+# Actions with the "held" token do implicit take.
+
+>put lamp on table
+You put the lamp on the table.
+
+>drop lamp
+You haven't got that.
+# Note slightly different failure message.
+
+>eat lamp
+(first taking the lamp)
+That's plainly inedible.
+
+>drop lamp
+Dropped.
+
+* nested
+
+>eat coin
+(first taking the coin)
+That's plainly inedible.
+# ...when purse is in room.
+
+>put purse on table
+You need to be holding the purse before you can put it on top of something else.
+
+>get purse 
+Taken.
+
+>put purse on table
+You put the purse on the table.
+
+>put coin in purse
+You put the coin into the purse.
+
+>eat coin
+(first taking the coin)
+That's plainly inedible.
+# ...when purse is on a supporter.
+
+>get purse
+Taken.
+
+>put coin in purse
+You put the coin into the purse.
+
+>eat coin
+(first taking the coin)
+That's plainly inedible.
+# ...when purse is in inventory.
