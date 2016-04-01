@@ -1,0 +1,100 @@
+Constant Story "Example 17";
+Constant Headline "^";
+
+Include "Parser";
+Include "VerbLib";
+
+Object Test_Chamber "Test Chamber"
+  with description "This is the Test Chamber.";
+
+Object -> glass_box "glass box with a lid"
+  with name 'glass' 'box' 'with' 'lid'
+  has  container transparent openable open;
+
+Object -> steel_box "steel box with a lid"
+  with name 'steel' 'box' 'with' 'lid'
+  has  container openable open;
+
+Object -> lamp "lamp"
+  with name 'lamp',
+       after [;
+           SwitchOn: give self light;
+           SwitchOff: give self ~light;
+       ],
+  has  switchable on light;
+
+[ InScope person;
+  if (person == player && location == thedark) {
+      if (lamp in parent(player)) {
+          PlaceInScope(lamp);
+      }
+      if (steel_box in parent(player)) {
+          PlaceInScope(steel_box);
+      }
+  }
+  rfalse;
+];
+
+[ Initialise;
+  location = Test_Chamber;
+];
+
+Include "Grammar";
+
+#END; ! test
+
+* test
+
+Test Chamber
+a glass box with a lid (which is empty)
+a steel box with a lid (which is empty)
+a lamp (providing light)
+
+>turn off lamp
+You switch the lamp off.
+It is now pitch dark in here!
+
+>l
+Darkness
+
+>turn on lamp
+You switch the lamp on.
+Test Chamber
+
+>take lamp
+Taken.
+
+>put lamp in glass box
+You put the lamp into the glass box with a lid.
+
+>close glass box
+You close the glass box with a lid.
+!pitch dark
+
+>l
+Test Chamber
+a glass box with a lid (which is closed) (in which is a lamp (providing light))
+
+>take lamp
+The glass box with a lid isn't open.
+
+>open glass box
+You open the glass box with a lid.
+
+>take lamp
+Taken.
+
+>put lamp in steel box
+You put the lamp into the steel box with a lid.
+
+>close steel box
+You close the steel box with a lid.
+It is now pitch dark in here!
+
+>l
+Darkness
+
+>open steel box
+You open the steel box with a lid.
+Test Chamber
+a steel box with a lid (in which is a lamp (providing light))
