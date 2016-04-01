@@ -4,7 +4,7 @@ To run these tests, you must have:
 
 - The Inform 6 compiler.
 - A Glulx interpreter compiled with the RemGlk library.
-- The Inform libraries release 6/11. This is set up as a submodule. 
+- The Inform libraries release 6/11. This is set up as a submodule.
 
 ## Running
 
@@ -96,9 +96,9 @@ Include one or more tests which demonstrate the behavior. Try to cover all aspec
 Otherwise follow the format in existing tests:
 
 - Use `"Example $NUM"` as the `Story` header and `"^"` as the `Headline`.
-- We're only compiling to Glulx. If an example is really Z-code-only, skip it.
+- We're only compiling to Glulx. If an exercise is really Z-code-only, skip it.
 - Spaces, not tabs.
-- Keep the framework simple. (Some examples are based on the _Ruins_ sample game from the DM4. You can include more code from _Ruins_ in your test if it makes sense, but you can also trim it down.)
+- Keep the framework simple. (Some exercises are based on the _Ruins_ sample game from the DM4. You can include more code from _Ruins_ in your test if it makes sense, but you can also trim it down.)
 - Abbreviate test outputs where possible. If your test includes a movement command, just check for the name of the destination room, not the room description. If the example code writes a paragraph of static output, just check for the first phrase.
 - If the test output is randomized, use regexp checks to cover all the possibilities.
 - One test (asterisk line) is usually sufficient. But it's better to write two tests than to rely on `RESTART` or `UNDO` commands in your test script.
