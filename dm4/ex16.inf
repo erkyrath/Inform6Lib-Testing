@@ -1,0 +1,65 @@
+Constant Story "Example 16";
+Constant Headline "^";
+
+Include "Parser";
+Include "VerbLib";
+
+Object Test_Chamber "Test Chamber"
+  with description
+          "This is the Test Chamber.",
+  has  light;
+
+Object -> bag "toothed bag"
+  with name 'toothed' 'bag',
+       description "A capacious bag with a toothed mouth.",
+       before [;
+           LetGo: "The bag defiantly bites itself
+                  shut on your hand until you desist.";
+           Close: "The bag resists all attempts to close it.";
+       ],
+       after [;
+           Receive:
+               "The bag wriggles hideously as it swallows ",
+               (the) noun, ".";
+       ],
+  has  container open openable;
+
+Object -> "rock"
+  with name 'rock';
+
+[ Initialise;
+  location = Test_Chamber;
+];
+
+Include "Grammar";
+
+#END; ! test
+
+* test
+
+Test Chamber
+You can see a toothed bag (which is empty) and a rock here.
+
+>look in bag
+The toothed bag is empty.
+
+>take rock
+Taken.
+
+>i
+a rock
+
+>put rock in bag
+The bag wriggles hideously as it swallows the rock.
+
+>look in bag
+In the toothed bag is a rock.
+
+>take rock
+The bag defiantly bites itself shut on your hand until you desist.
+
+>look in bag
+In the toothed bag is a rock.
+
+>i
+You are carrying nothing.
