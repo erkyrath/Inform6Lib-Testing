@@ -49,18 +49,14 @@ Kitchen
 You can see a bag (in which are three gold coins, two silver coins and a copper coin) here.
 
 >get gold coins
-gold coin: Taken.
-gold coin: Taken.
-gold coin: Taken.
-# The test apparatus can't distinguish one of these lines from three, so this test isn't as definitive as it looks. That's why we keep doing "look" and "inv".
+{count=3} gold coin: Taken.
 
 >i
 You are carrying:
   three gold coins
 
 >drop two coins
-gold coin: Dropped.
-gold coin: Dropped.
+{count=2} gold coin: Dropped.
 
 >i
 You are carrying:
@@ -70,16 +66,14 @@ You are carrying:
 You can see two gold coins and a bag (in which are two silver coins and a copper coin) here.
 
 >get all coins
-gold coin: Taken.
-gold coin: Taken.
+{count=2} gold coin: Taken.
 
 >i
 You are carrying:
   three gold coins
 
 >remove silver coins from bag
-silver coin: Removed.
-silver coin: Removed.
+{count=2} silver coin: Removed.
 
 >i
 You are carrying:
@@ -87,8 +81,7 @@ You are carrying:
   three gold coins
 
 >drop two gold
-gold coin: Dropped.
-gold coin: Dropped.
+{count=2} gold coin: Dropped.
 
 >l
 You can see two gold coins and a bag (in which is a copper coin) here.
