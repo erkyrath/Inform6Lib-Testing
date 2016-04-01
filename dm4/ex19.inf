@@ -83,6 +83,12 @@ You are carrying nothing.
 >open bag
 The woollen twine is knotted hopelessly tight.
 
+>take watch
+The gold watch is inside the bag.
+
+>i
+You are carrying nothing.
+
 >close bag
 That's already closed.
 
