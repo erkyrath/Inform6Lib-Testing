@@ -1,0 +1,96 @@
+Constant Story "Example 18";
+Constant Headline "^";
+
+Include "Parser";
+Include "VerbLib";
+
+Object Test_Chamber "Test Chamber"
+  with description "This is the Test Chamber.",
+  has  light;
+
+Object -> television "portable television set"
+  with name 'tv' 'television' 'set' 'portable',
+       before [;
+           SwitchOn: <<SwitchOn power_button>>;
+           SwitchOff: <<SwitchOff power_button>>;
+           Examine: <<Examine screen>>;
+       ],
+  has  transparent;
+
+Object -> -> power_button "power button"
+  with name 'power' 'button' 'switch',
+       after [;
+           SwitchOn, SwitchOff: <<Examine screen>>;
+       ],
+  has  switchable;
+
+Object -> -> screen "television screen"
+  with name 'screen',
+       before [;
+           Examine: if (power_button hasnt on) "The screen is black.";
+               "The screen writhes with a strange Japanese cartoon.";
+       ];
+
+[ Initialise;
+  location = Test_Chamber;
+];
+
+Include "Grammar";
+
+#END; ! test
+
+* test
+
+Test Chamber
+You can see a portable television set here.
+
+>x set
+The screen is black.
+
+>x button
+The power button is currently switched off.
+
+>x screen
+The screen is black.
+
+>take set
+Taken.
+
+>i
+a portable television set
+
+>take button
+That seems to be a part of the portable television set.
+
+>take screen
+That seems to be a part of the portable television set.
+
+>turn on tv
+The screen writhes with a strange Japanese cartoon.
+
+>x tv
+The screen writhes with a strange Japanese cartoon.
+
+>x button
+The power button is currently switched on.
+
+>x screen
+The screen writhes with a strange Japanese cartoon.
+
+>turn off tv
+The screen is black.
+
+>x tv
+The screen is black.
+
+>x button
+The power button is currently switched off.
+
+>x screen
+The screen is black.
+
+>turn on button
+The screen writhes with a strange Japanese cartoon.
+
+>turn off button
+The screen is black.
