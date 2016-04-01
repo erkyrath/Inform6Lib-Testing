@@ -14,7 +14,7 @@ To run these tests, you must have:
 
 Then you can run this sort of command:
 
-    python3 dotest.py --compiler ~/src/inform6/inform --lib ../../i6lib-611 --terp ~/bin/glulxer *.inf
+    python3 dotest.py --compiler ~/src/inform6/inform --terp ~/bin/glulxer *.inf
 
 Each test looks like regular Inform 6 source code, except that the source
 ends with the line

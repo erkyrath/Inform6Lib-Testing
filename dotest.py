@@ -23,6 +23,7 @@ popt.add_option('-c', '--compiler',
                 help='Inform 6 compiler')
 popt.add_option('--library', '--lib',
                 action='store', dest='librarypath',
+                default='inform6lib',
                 help='Inform 6 library directory')
 popt.add_option('-i', '--interpreter', '--terp',
                 action='store', dest='terppath',
