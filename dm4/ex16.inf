@@ -5,8 +5,7 @@ Include "Parser";
 Include "VerbLib";
 
 Object Test_Chamber "Test Chamber"
-  with description
-          "This is the Test Chamber.",
+  with description "This is the Test Chamber.",
   has  light;
 
 Object -> bag "toothed bag"
