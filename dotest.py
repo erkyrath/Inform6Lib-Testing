@@ -1,5 +1,15 @@
 #!/usr/bin/env python3
 
+# DoTest: a really simple IF regression tester.
+#   Andrew Plotkin <erkyrath@eblong.com>
+#   This script is in the public domain.
+#
+# This is derived from regtest.py, although it's not identical. This
+# version is Python 3 (rather than 2) and adapted to compile I6 code
+# before running tests.
+#
+# For the original, see <http://eblong.com/zarf/plotex/regtest.html>
+
 import sys
 import os
 import optparse
