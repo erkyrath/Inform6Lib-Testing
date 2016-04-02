@@ -1,0 +1,97 @@
+Constant Story "Example 27";
+Constant Headline "^";
+
+Include "Parser";
+Include "VerbLib";
+
+Object Bridge "Bridge"
+  with description "This is the bridge.",
+  has  light;
+
+Object -> computer "computer"
+  with name 'computer',
+       theta_setting,
+       orders [;
+           Theta: if (noun < 0 || noun >= 360)
+                      "~That value of theta is out of range.~";
+                  self.theta_setting = noun;
+                  "~Theta set. Waiting for additional values.~";
+           default: "~Please rephrase.~";
+       ],
+  has  talkable static;
+
+[ Initialise;
+  location = Bridge;
+];
+
+Include "Grammar";
+
+[ ThetaSub; "You must tell your computer so."; ];
+Verb 'theta' * 'is' number -> Theta;
+
+#END; ! test
+
+* test
+
+Bridge
+You can see a computer here.
+
+# different response later
+>theta is
+You must tell your computer so.
+
+>take computer
+That's fixed in place.
+
+>computer, theta is 0
+"Theta set. Waiting for additional values."
+
+>theta is
+I didn't understand that number.
+
+>computer, theta is 359
+"Theta set. Waiting for additional values."
+
+>computer, theta is -1
+"Please rephrase."
+
+>computer, theta is 360
+"That value of theta is out of range."
+
+>computer, theta is twenty
+"Theta set. Waiting for additional values."
+
+>computer, theta is twenty-one
+"Please rephrase."
+
+>computer, hello
+"Please rephrase."
+
+>ask computer about theta
+There is no reply.
+
+>tell computer about theta
+This provokes no reaction.
+
+>say "180" to computer
+There is no reply.
+
+>answer 180 to computer
+There is no reply.
+
+# different response later
+>theta
+(is that)
+You must tell your computer so.
+
+>theta is computer
+I didn't understand that number.
+
+>theta
+I didn't understand that number.
+
+>theta is 42
+You must tell your computer so.
+
+>theta is 10 0
+I only understood you as far as wanting to theta is that.
