@@ -1,0 +1,117 @@
+Constant Story "Example 30";
+Constant Headline "^";
+
+Include "Parser";
+Include "VerbLib";
+
+Object Playground "Playground"
+  with description "This is the playground.",
+  has  light;
+
+! Modified to remove simon says and leave only the clapping game, since we
+! tested simon says in the previous exercise.
+
+Object -> Charlotte "Charlotte"
+  with name 'charlotte' 'charlie' 'chas',
+       number 0,
+       grammar [;
+           self.number = TryNumber(verb_wordnum);
+           if (self.number ~= -1000) {
+               action = ##Clap; noun = 0; second = 0; rtrue;
+           }
+           ! added to avoid probs with "charlotte, clap"
+           self.number = 0;
+       ],
+       orders [ i;
+           Clap: if (self.number == 0) "Charlotte folds her arms.";
+                 for (i = 0: i < self.number: i++) {
+                     print "Clap! ";
+                     if (i == 100)
+                         print "(You must be regretting this by now.) ";
+                     if (i == 200)
+                         print "(What a determined person she is.) ";
+                 }
+                 if (self.number > 100)
+                     "^^Charlotte is a bit out of breath now.";
+                 "^^~Easy!~ says Charlotte.";
+           default: "~Don't know how,~ says Charlotte.";
+       ],
+       initial "Charlotte wants to play the clapping game.",
+  has  animate female proper;
+
+[ Initialise;
+  location = Playground;
+];
+
+Include "Grammar";
+
+[ ClapSub;
+  if (actor == player) "You clap.";
+  print_ret (The) actor, " claps.";
+];
+
+Verb 'clap'
+    * -> Clap;
+
+#END; ! test
+
+* test
+
+Playground
+Charlotte wants to play the clapping game.
+
+>clap
+You clap.
+
+>charlotte, clap
+Charlotte folds her arms.
+
+>charlotte, 0
+Charlotte folds her arms.
+
+>charlotte, 1
+Clap!
+!Clap! Clap!
+"Easy!" says Charlotte.
+
+>charlotte, 2
+Clap! Clap!
+!Clap! Clap! Clap!
+"Easy!" says Charlotte.
+
+>charlotte, 3
+Clap! Clap! Clap!
+!Clap! Clap! Clap! Clap!
+"Easy!" says Charlotte.
+
+>charlotte, twelve
+Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap!
+!Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap!
+"Easy!" says Charlotte.
+
+>charlotte, 100
+Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap!
+"Easy!" says Charlotte.
+!Charlotte is a bit out of breath now.
+!(You must be regretting this by now.)
+
+>charlotte, 101
+Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap!
+!"Easy!" says Charlotte.
+Charlotte is a bit out of breath now.
+(You must be regretting this by now.)
+
+>charlotte, 200
+Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap!
+Charlotte is a bit out of breath now.
+(You must be regretting this by now.)
+!(What a determined person she is.)
+
+>charlotte, 201
+Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap!
+Charlotte is a bit out of breath now.
+(You must be regretting this by now.)
+(What a determined person she is.)
+
+>say 42 to charlotte
+There is no reply.
