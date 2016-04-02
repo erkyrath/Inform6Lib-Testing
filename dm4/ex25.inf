@@ -56,7 +56,9 @@ Include "Grammar";
 
 * test
 
+# the word "Library" will always match because of the Inform banner.
 Library
+This is the library.
 A black Bible rests on a spread-eagle lectern.
 
 >x bible
