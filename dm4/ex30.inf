@@ -91,6 +91,8 @@ Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap!
 
 >charlotte, 100
 Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap!
+{count=100} Clap
+!{count=101} Clap
 "Easy!" says Charlotte.
 !Charlotte is a bit out of breath now.
 !(You must be regretting this by now.)
@@ -109,6 +111,8 @@ Charlotte is a bit out of breath now.
 
 >charlotte, 201
 Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap! Clap!
+{count=201} Clap
+!{count=202} Clap
 Charlotte is a bit out of breath now.
 (You must be regretting this by now.)
 (What a determined person she is.)
