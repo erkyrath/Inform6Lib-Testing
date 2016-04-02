@@ -1,0 +1,85 @@
+Constant Story "Example 28";
+Constant Headline "^";
+
+Include "Parser";
+Include "VerbLib";
+
+Object Chess_Club "Chess Club"
+  with description "This is the chess club.",
+  has  light;
+
+Object -> Nigel_Short "Nigel Short"
+  with name 'nigel' 'short',
+       life [;
+           Ask: switch (second) {
+                    'chess': "~The game is life.~";
+                    'emily': "~No relation.~";
+                    'grunfeld', 'defence', 'defense':
+                        "~Queen's pawn openings are the best.~";
+                }
+                "~You're breaking my concentration.~";
+       ],
+       orders [;
+           NotUnderstood: "~What are you on about?~";
+           default: "~I'm busy.~";
+       ],
+  has  animate proper;
+
+[ Initialise;
+  location = Chess_Club;
+];
+
+Include "Grammar";
+
+[ SayInsteadSub; "[To talk to someone, please type ~someone, something~
+    or else ~ask someone about something~.]"; ];
+Extend 'answer' replace * topic -> SayInstead;
+Extend 'tell'   replace * topic -> SayInstead;
+
+#END; ! test
+
+* test
+
+Chess Club
+You can see Nigel Short here.
+
+>ask nigel about chess
+"The game is life."
+
+>tell nigel
+[To talk to someone, please type "someone, something"
+or else "ask someone about something".]
+
+>tell nigel about inform
+[To talk to someone, please type "someone, something"
+or else "ask someone about something".]
+
+>nigel, jump
+"I'm busy."
+
+>nigel, write interactive fiction
+"What are you on about?"
+
+>answer nigel
+[To talk to someone, please type "someone, something"
+or else "ask someone about something".]
+
+>answer 42 to nigel
+[To talk to someone, please type "someone, something"
+or else "ask someone about something".]
+
+>ask nigel about emily
+"No relation."
+
+>ask nigel about kasparov
+"You're breaking my concentration."
+
+>nigel, tell me about the grunfeld defence
+"I'm busy."
+
+>ask nigel about the grunfeld defence
+"Queen's pawn openings are the best."
+
+>ask nigel
+(for Nigel Short)
+"I'm busy."

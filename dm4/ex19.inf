@@ -1,0 +1,96 @@
+Constant Story "Example 19";
+Constant Headline "^";
+
+Include "Parser";
+Include "VerbLib";
+
+Object Test_Chamber "Test Chamber"
+  with description "This is the Test Chamber.",
+  has  light;
+
+Object -> macrame_bag "macrame bag"
+  with name 'macrame' 'bag' 'string' 'net' 'sack',
+       react_before [;
+           Examine, Search, Listen, Smell: ;
+           default:
+               if (inp1 > 1 && noun in self)
+                   print_ret (The) noun, " is inside the bag.";
+               if (inp2 > 1 && second in self)
+                   print_ret (The) second, " is inside the bag.";
+       ],
+       before [;
+           Open: "The woollen twine is knotted hopelessly tight.";
+       ],
+       describe [;
+           print "^A macrame bag hangs from the ceiling, shut tight";
+           if (child(self)) {
+               print ". Inside you can make out ";
+               WriteListFrom(child(self), ENGLISH_BIT);
+           }
+           ".";
+       ],
+  has  container transparent openable;
+
+Object -> -> "gold watch"
+  with name 'gold' 'watch',
+       description "The watch has no hands, oddly.",
+       react_before [;
+           Listen:
+               if (noun == nothing or self) "The watch ticks loudly.";
+       ];
+
+[ Initialise;
+  location = Test_Chamber;
+];
+
+Include "Grammar";
+
+#END; ! test
+
+* test
+
+Test Chamber
+A macrame bag hangs from the ceiling, shut tight.
+Inside you can make out a gold watch.
+
+>listen
+The watch ticks loudly.
+
+>listen to bag
+You hear nothing unexpected.
+
+>listen to watch
+The watch ticks loudly.
+
+>x bag
+In the macrame bag is a gold watch.
+
+>search bag
+In the macrame bag is a gold watch.
+
+>smell bag
+You smell nothing unexpected.
+
+>x watch
+The watch has no hands, oddly.
+
+>take watch
+The gold watch is inside the bag.
+
+>i
+You are carrying nothing.
+
+>open bag
+The woollen twine is knotted hopelessly tight.
+
+>take watch
+The gold watch is inside the bag.
+
+>i
+You are carrying nothing.
+
+>close bag
+That's already closed.
+
+>set watch to 12
+The gold watch is inside the bag.

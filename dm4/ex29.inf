@@ -1,0 +1,67 @@
+Constant Story "Example 29";
+Constant Headline "^";
+
+Include "Parser";
+Include "VerbLib";
+
+Object Playground "Playground"
+  with description "This is the playground.",
+  has  light;
+
+Object -> Charlotte "Charlotte"
+  with name 'charlotte' 'charlie' 'chas',
+       simon_said,
+       grammar [;
+           self.simon_said = false;
+           wn = verb_wordnum;
+           if (NextWord() == 'simon' && NextWord() == 'says') {
+               if (wn > num_words) print "Simon says nothing, so ";
+               else {
+                   self.simon_said = true;
+                   verb_wordnum = wn;
+               }
+           }
+       ],
+       orders [;
+           if (self.simon_said == false)
+               "Charlotte sticks her tongue out.";
+           WaveHands: "Charlotte waves energetically.";
+           default: "~Don't know how,~ says Charlotte.";
+       ],
+       initial "Charlotte wants to play Simon Says.",
+  has  animate female proper;
+
+[ Initialise;
+  location = Playground;
+];
+
+Include "Grammar";
+
+#END; ! test
+
+* test
+
+Playground
+Charlotte wants to play Simon Says.
+
+>charlotte, wave
+Charlotte sticks her tongue out.
+
+>charlie, simon says wave
+Charlotte waves energetically
+
+>chas, simon says
+Simon says nothing, so Charlotte sticks her tongue out.
+
+>charlotte, jump
+Charlotte sticks her tongue out.
+
+>charlotte, simon says jump
+"Don't know how," says Charlotte.
+
+>simon says wave
+That's not a verb I recognise.
+
+>say "simon says wave"
+(to Charlotte)
+There is no reply.

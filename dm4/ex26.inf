@@ -1,0 +1,103 @@
+Constant Story "Example 26";
+Constant Headline "^";
+
+Include "Parser";
+Include "VerbLib";
+
+Object Lab "Lab"
+  with description "This is the lab.",
+  has  light;
+
+Object -> psychiatrist "bearded psychiatrist"
+  with name 'bearded' 'doctor' 'psychiatrist' 'psychologist' 'shrink',
+       initial "A bearded psychiatrist has you under observation.",
+       life [;
+           "He is fascinated by your behaviour, but makes no attempt
+           to interfere with it.";
+       ],
+       react_after [;
+           Insert: print "~Subject associates ", (name) noun, " with ",
+               (name) second, ". Interesting.~^^";
+           PutOn: print "~Subject puts ", (name) noun, " on ",
+               (name) second, ". Interesting.~^^";
+           ! newline removed to fix output of following print statement.
+           Look: print "^~Pretend I'm not here.~^";
+       ],
+       react_before [;
+           Take, Remove: print "~Subject feels lack of ", (the) noun,
+               ". Suppressed Oedipal complex? Hmm.~^^";
+       ],
+  has  animate;
+
+Object -> table "table"
+  with name 'table',
+  has  supporter static;
+
+Object -> -> vase "vase"
+  with name 'vase',
+  has  container open;
+
+Object -> -> cigar "cigar"
+  with name 'cigar',
+       description "It's just a cigar.";
+
+[ Initialise;
+  location = Lab;
+];
+
+Include "Grammar";
+
+#END; ! test
+
+* test
+
+Lab
+A bearded psychiatrist has you under observation.
+You can also see a table (on which are a vase (which is empty) and a cigar)
+"Pretend I'm not here."
+
+>take table
+"Subject feels lack of the table. Suppressed Oedipal complex? Hmm."
+That's fixed in place.
+
+>take shrink
+"Subject feels lack of the bearded psychiatrist. Suppressed Oedipal complex?
+I don't suppose the bearded psychiatrist would care for that.
+
+>take cigar
+"Subject feels lack of the cigar. Suppressed Oedipal complex? Hmm."
+Taken.
+
+>i
+a cigar
+
+>x cigar
+It's just a cigar.
+
+>put cigar in vase
+"Subject associates cigar with vase. Interesting."
+You put the cigar into the vase.
+
+>x vase
+In the vase is a cigar.
+
+>ask shrink about cigar
+He is fascinated by your behaviour, but makes no attempt to interfere with it.
+
+>take vase
+"Subject feels lack of the vase. Suppressed Oedipal complex? Hmm."
+Taken.
+
+>put vase on table
+"Subject puts vase on table. Interesting."
+You put the vase on the table.
+
+>l
+Lab
+A bearded psychiatrist has you under observation.
+You can also see a table (on which is a vase (in which is a cigar)) here.
+"Pretend I'm not here."
+
+>remove cigar from vase
+"Subject feels lack of the cigar. Suppressed Oedipal complex? Hmm."
+Removed.
