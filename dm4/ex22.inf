@@ -1,0 +1,99 @@
+Constant Story "Example 22";
+Constant Headline "^";
+
+Include "Parser";
+Include "VerbLib";
+
+Object Antechamber "Antechamber"
+  with description
+           "The southeastern eaves of the Shrine make a curious
+           antechamber.",
+       in_to [;
+           <<Enter cage>>;
+       ],
+  has  light;
+
+Object -> cage "iron cage"
+  with name 'iron' 'cage' 'bars' 'barred' 'iron-barred',
+       when_open
+           "An iron-barred cage, large enough to stoop over inside,
+           looms ominously here.",
+       when_closed "The iron cage is closed.",
+       inside_description "You stare out through the bars.",
+  has  enterable container openable open transparent static;
+
+[ Initialise;
+  location = Antechamber;
+];
+
+Include "Grammar";
+
+#END; ! test
+
+* test
+
+Antechamber
+An iron-barred cage, large enough to stoop over inside, looms ominously here.
+
+>x cage
+The iron cage is empty.
+
+>take cage
+That's fixed in place.
+
+>open cage
+That's already open.
+
+>close cage
+You close the iron cage.
+
+>l
+Antechamber
+The iron cage is closed.
+
+>enter cage
+You can't get into the closed iron cage.
+
+>open cage
+You open the iron cage.
+
+>l
+Antechamber
+An iron-barred cage, large enough to stoop over inside, looms ominously here.
+
+>enter cage
+You get into the iron cage.
+
+>l
+Antechamber (in the iron cage)
+You stare out through the bars.
+
+>close cage
+You close the iron cage.
+
+>l
+Antechamber (in the iron cage)
+You stare out through the bars.
+
+>exit cage
+You can't get out of the closed iron cage.
+
+>open cage
+You open the iron cage.
+
+>exit cage
+You get out of the iron cage.
+Antechamber
+An iron-barred cage, large enough to stoop over inside, looms ominously here.
+
+>in
+You get into the iron cage.
+
+>l
+Antechamber (in the iron cage)
+You stare out through the bars.
+
+>out
+You get out of the iron cage.
+Antechamber
+An iron-barred cage, large enough to stoop over inside, looms ominously here.
