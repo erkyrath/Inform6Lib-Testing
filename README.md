@@ -63,9 +63,14 @@ Note that checks are *independent*. If you write:
     > i
     gold ring
     silver coin
-    silver coin
 
-...then the script will check twice for `silver coin` in the output, which is a waste of time. It is *not* checking that the line appears twice. It also does not check that lines appear in any particular order. (But, for inventory, that's a good thing; you probably don't care about the order.)
+...then you're checking for those two lines, but not their order. (This is a good thing; you generally don't care about the order of inventory output.)
+
+The line
+
+    {count=3} coin
+
+...will check that the word `coin` occurs at least three times in the output. (Note that repeating the test line `coin` three times is not sufficient. That would just triple-check for the word, which is a waste of time.)
 
 A check line starting with "!" is negated. A check line starting with "/" is a regular expression. If you write:
 
@@ -73,7 +78,7 @@ A check line starting with "!" is negated. A check line starting with "/" is a r
     /(Red|Green|Blue) Chamber
     !grue
 
-...then the script would check that the result of the `north` command included *any* of the phrases `Red Chamber`, `Green Chamber`, `Blue Chamber`, and also did *not* contain the word `grue`. (Yes, you can write `!/` for a negated regexp.)
+...then the script would check that the result of the `north` command included *any* of the phrases `Red Chamber`, `Green Chamber`, `Blue Chamber`, and also did *not* contain the word `grue`. (Yes, you can write `!/` for a negated regexp. You can also write `!{count=...}`. But you can't combine the regexp and count formats, sorry.)
 
 You can include several tests, each starting with an asterisk line:
 
