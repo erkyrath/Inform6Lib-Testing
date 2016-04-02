@@ -1,0 +1,181 @@
+Constant Story "Example 23";
+Constant Headline "^";
+
+Include "Parser";
+Include "VerbLib";
+
+Class Road has light;
+
+Road cave "Cave"
+  with description
+           "This secret cave below Trafalgar Square serves as your garage.",
+       out_to Trafalgar_Square,
+  has  light;
+
+Road Trafalgar_Square "Trafalgar Square"
+  with n_to National_Gallery, e_to Strand,
+       w_to Pall_Mall, s_to Whitehall, in_to cave,
+       description "The Square is overlooked by a pillared statue
+           of Admiral Lord Horatio Nelson (no relation), naval hero
+           and convenience to pigeons since 1812.";
+
+! Wikipedia says that these are all roads in Westminster...
+Road Strand "Strand"
+  with w_to Trafalgar_Square,
+       description "This is Strand.";
+
+Road Pall_Mall "Pall Mall"
+  with e_to Trafalgar_Square,
+       description "This is Pall Mall.";
+
+Road Whitehall "Whitehall"
+  with n_to Trafalgar_Square,
+       description "This is Whitehall.";
+
+! ...while this is an art museum that one ought not to drive through.
+Object National_Gallery "National Gallery"
+  with s_to Trafalgar_Square,
+       description "This is the National Gallery.",
+  has  light;
+
+Object car "little red car" cave
+  with name 'little' 'red' 'car',
+       description "Large enough to sit inside. Among the controls is a
+           prominent on/off switch. The numberplate is KAR 1.",
+       when_on  "The red car sits here, its engine still running.",
+       when_off "A little red car is parked here.",
+       before [ way;
+           Go: way = location.(noun.door_dir)();
+               if (~~(way ofclass Road)) {
+                   print "You can't drive the car off-road.^";
+                   return 2;
+               }
+               if (car has on) "Brmm! Brmm!";
+               print "(The ignition is off at the moment.)^";
+       ],
+  has  switchable enterable static container open;
+
+[ Initialise;
+  location = cave;
+];
+
+Include "Grammar";
+
+#END; ! test
+
+* test
+
+Cave
+!(in the little red car)
+A little red car is parked here.
+
+>x car
+Large enough to sit inside.
+The little red car is currently switched off.
+
+>out
+Trafalgar Square
+
+>w
+Pall Mall
+
+>e
+Trafalgar Square
+
+>n
+National Gallery
+
+>s
+Trafalgar Square
+
+>s
+Whitehall
+
+>s
+You can't go that way.
+
+>n
+Trafalgar Square
+
+>e
+Strand
+
+>w
+Trafalgar Square
+
+>in
+Cave
+!(in the little red car)
+A little red car is parked here.
+
+>enter car
+You get into the little red car.
+
+>go out
+(The ignition is off at the moment.)
+You'll have to get out of the little red car first.
+
+>turn on car
+You switch the little red car on.
+
+>out
+You get out of the little red car.
+Cave
+!(in the little red car)
+The red car sits here, its engine still running.
+
+>take car
+That's fixed in place.
+
+>enter car
+You get into the little red car.
+
+>l
+Cave (in the little red car)
+
+>go out
+Brmm! Brmm!
+Trafalgar Square (in the little red car)
+
+>w
+Brmm! Brmm!
+Pall Mall (in the little red car)
+
+>e
+Brmm! Brmm!
+Trafalgar Square (in the little red car)
+
+>n
+You can't drive the car off-road.
+
+>exit
+You get out of the little red car.
+
+>push car n
+Is that the best you can think of?
+
+>get in car
+You get into the little red car.
+
+>s
+Brmm! Brmm!
+Whitehall (in the little red car)
+
+>s
+You can't drive the car off-road.
+
+>n
+Brmm! Brmm!
+Trafalgar Square (in the little red car)
+
+>e
+Brmm! Brmm!
+Strand (in the little red car)
+
+>w
+Brmm! Brmm!
+Trafalgar Square (in the little red car)
+
+>in
+Brmm! Brmm!
+Cave (in the little red car)

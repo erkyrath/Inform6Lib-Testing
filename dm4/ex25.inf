@@ -1,0 +1,144 @@
+Constant Story "Example 25";
+Constant Headline "^";
+
+Include "Parser";
+Include "VerbLib";
+
+Class Biblical with name 'book' 'of';
+Class Gospel class Biblical with name 'gospel' 'saint' 'st';
+Gospel "Gospel of St Matthew" with name 'matthew', chapters 28;
+Gospel "Gospel of St Mark" with name 'mark', chapters 16;
+Gospel "Gospel of St Luke" with name 'luke', chapters 24;
+Gospel "Gospel of St John" with name 'john', chapters 21;
+! ...
+Biblical "Book of Revelation" with name 'revelation', chapters 22;
+
+Object Library "Library"
+  with description "This is the library.",
+  has  light;
+
+Object -> "black Tyndale Bible"
+  with name 'bible' 'black' 'book',
+       initial "A black Bible rests on a spread-eagle lectern.",
+       description "A splendid foot-high Bible, which must have
+           survived the burnings of 1520.",
+       before [ bk ch_num;
+           Consult:
+               do {
+                   wn = consult_from;
+                   bk = ParseToken(SCOPE_TT, BiblicalScope);
+               } until (bk ~= GPR_REPARSE);
+               if (bk == GPR_FAIL) "That's not a book in this Bible.";
+               if (NextWord() ~= 'chapter') wn--;
+               ch_num = TryNumber(wn);
+               if (ch_num == -1000)
+                   "You read ", (the) bk, " right through.";
+               if (ch_num > bk.chapters) "There are only ",
+                   (number) bk.chapters," chapters in ", (the) bk, ".";
+               "Chapter ", (number) ch_num, " of ", (the) bk,
+                   " is too sacred for you to understand now.";
+       ];
+
+[ BiblicalScope bk;
+  switch (scope_stage) {
+      1: rfalse;
+      2: objectloop (bk ofclass Biblical) PlaceInScope(bk); rtrue;
+  }
+];
+
+[ Initialise;
+  location = Library;
+];
+
+Include "Grammar";
+
+#END; ! test
+
+* test
+
+# the word "Library" will always match because of the Inform banner.
+Library
+This is the library.
+A black Bible rests on a spread-eagle lectern.
+
+>x bible
+A splendid foot-high Bible, which must have survived the burnings of 1520.
+
+>take bible
+Taken.
+
+>i
+a black Tyndale Bible
+
+>look up gospel in bible
+Which do you mean
+the Gospel of St Matthew
+the Gospel of St Mark
+the Gospel of St Luke
+the Gospel of St John
+!the Book of Revelation
+
+>mark
+You read the Gospel of St Mark right through.
+
+>look up john 1 in bible
+Chapter one of the Gospel of St John is too sacred for you to understand now.
+
+>look up St John chapter 17 in bible
+Chapter seventeen of the Gospel of St John is too sacred
+
+>consult bible about book of
+Which do you mean
+the Gospel of St Matthew
+the Gospel of St Mark
+the Gospel of St Luke
+the Gospel of St John
+the Book of Revelation
+
+>revelation
+You read the Book of Revelation right through.
+
+>read about luke 24 in bible
+Chapter twenty-four of the Gospel of St Luke is too sacred
+
+>read about luke chapter 25 in bible
+There are only twenty-four chapters in the Gospel of St Luke.
+
+>read about st mark sixteen in book
+Chapter sixteen of the Gospel of St Mark is too sacred
+
+# The parser only recognizes textual numbers <= twenty.
+>read about st twenty-nine in book
+Which do you mean
+the Gospel of St Matthew
+the Gospel of St Mark
+the Gospel of St Luke
+the Gospel of St John
+!the Book of Revelation
+
+>matthew
+You read the Gospel of St Matthew right through.
+
+>read about st matthew 29 in book
+There are only twenty-eight chapters in the Gospel of St Matthew
+
+>read about john chapter twenty in book
+Chapter twenty of the Gospel of St John is too sacred
+
+>read about john chapter twenty-one in bible
+You read the Gospel of St John right through.
+
+>look up chapter in bible
+That's not a book in this Bible.
+
+>look up 42 in bible
+That's not a book in this Bible.
+
+>look up thirteen in bible
+That's not a book in this Bible.
+
+>look up mark 10 10 in bible
+Chapter ten of the Gospel of St Mark is too sacred
+
+>look up mark chapter chapter 10 in bible
+You read the Gospel of St Mark right through.

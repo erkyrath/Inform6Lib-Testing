@@ -1,0 +1,132 @@
+Constant Story "Example 24";
+Constant Headline "^";
+
+Include "Parser";
+Include "VerbLib";
+
+Object Canyon_N "Upper End of Canyon"
+  with s_to Junction, d_to Junction,
+       description
+           "The higher, broader northern end of the canyon rises only
+           to an uneven wall of volcanic karst.",
+  has  light;
+
+Object -> huge_ball "huge pumice-stone ball"
+  with name 'huge' 'pumice' 'pumice-stone' 'stone' 'ball',
+       description
+           "A good eight feet across, though fairly lightweight.",
+       initial
+           "A huge pumice-stone ball rests here, eight feet wide.",
+       before [;
+           PushDir:
+               if (location == Junction && second == ne_obj)
+                   "The Shrine entrance is far less than eight feet
+                   wide.";
+               if (second == u_obj) <<PushDir self n_obj>>;
+               if (second == d_obj) <<PushDir self s_obj>>;
+               AllowPushDir(); rtrue;
+           Pull, Push, Turn:
+               "It wouldn't be so very hard to get rolling.";
+           Take, Remove:
+               "There's a lot of stone in an eight-foot sphere.";
+       ],
+       after [;
+           PushDir:
+               if (second == s_obj)
+                   "The ball is hard to stop once underway.";
+               if (second == n_obj)
+                   "You strain to push the ball uphill.";
+       ],
+  has  static;
+
+Object Junction "Xibalb@'a"
+  with description
+           "Fifty metres beneath rainforest, and the sound of water
+           is everywhere: these deep, eroded limestone caves
+           extend like tap roots. A slither northeast by a broad
+           collapsed column of ice-covered rock leads back to the
+           Shrine, while a kind of canyon floor extends uphill to
+           the north and downwards to south, pale white like shark's
+           teeth in the diffused light from the sodium lamp above.",
+       n_to Canyon_N, u_to Canyon_N,
+  has  light;
+
+[ Initialise;
+  location = Canyon_N;
+];
+
+Include "Grammar";
+
+#END; ! test
+
+* test
+
+Upper End of Canyon
+A huge pumice-stone ball rests here, eight feet wide.
+
+>x ball
+A good eight feet across, though fairly lightweight.
+
+>take ball
+There's a lot of stone in an eight-foot sphere.
+
+>push ball
+It wouldn't be so very hard to get rolling.
+
+>pull ball
+It wouldn't be so very hard to get rolling.
+
+>turn ball
+It wouldn't be so very hard to get rolling.
+
+>s
+Xibalbá
+
+>n
+Upper End of Canyon
+A huge pumice-stone ball rests here, eight feet wide.
+
+>d
+Xibalbá
+
+>u
+Upper End of Canyon
+A huge pumice-stone ball rests here, eight feet wide.
+
+>push ball s
+The ball is hard to stop once underway.
+Xibalbá
+
+>l
+Xibalbá
+A huge pumice-stone ball rests here, eight feet wide.
+
+>push ball ne
+The Shrine entrance is far less than eight feet wide.
+
+>push ball n
+You strain to push the ball uphill.
+Upper End of Canyon
+
+>l
+Upper End of Canyon
+A huge pumice-stone ball rests here, eight feet wide.
+
+>push ball ne
+You can't go that way.
+
+>push ball d
+The ball is hard to stop once underway.
+Xibalbá
+
+>l
+Xibalbá
+A huge pumice-stone ball rests here, eight feet wide.
+
+>push ball u
+You strain to push the ball uphill.
+Upper End of Canyon
+
+>l
+Upper End of Canyon
+A huge pumice-stone ball rests here, eight feet wide.

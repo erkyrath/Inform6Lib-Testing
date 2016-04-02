@@ -1,0 +1,84 @@
+Constant Story "Example 20";
+Constant Headline "^";
+
+Include "Parser";
+Include "VerbLib";
+
+Object NearSide "Near Side of Chasm"
+  with description "The far side of the chasm is to the south.",
+       s_to PlankBridge,
+  has  light;
+
+Object -> "feather"
+  with name 'feather';
+
+Object FarSide "Far Side of Chasm"
+  with description "The near side of the chasm is to the north.",
+       n_to PlankBridge,
+  has  light;
+
+Object -> PlankBridge "plank bridge"
+  with description "Extremely fragile and precarious.",
+       name 'precarious' 'fragile' 'wooden' 'plank' 'bridge',
+       when_open "A precarious plank bridge spans the chasm.",
+       door_to [;
+           if (children(player) > 0) {
+               deadflag = true;
+               "You step gingerly across the plank, which bows under
+               your weight. But your meagre possessions are the straw
+               which breaks the camel's back!";
+           }
+           print "You step gingerly across the plank, grateful that
+               you're not burdened.^";
+           if (self in NearSide) return FarSide; return NearSide;
+       ],
+       door_dir [;
+           if (self in NearSide) return s_to; return n_to;
+       ],
+       found_in NearSide FarSide,
+  has  static door open;
+
+[ Initialise;
+  location = NearSide;
+];
+
+Include "Grammar";
+
+#END; ! test
+
+* test
+
+Near Side of Chasm
+A precarious plank bridge spans the chasm.
+You can also see a feather here.
+
+>s
+You step gingerly across the plank, grateful that you're not burdened.
+Far Side of Chasm
+A precarious plank bridge spans the chasm.
+
+>n
+You step gingerly across the plank, grateful that you're not burdened.
+Near Side of Chasm
+
+>enter bridge
+Far Side of Chasm
+
+>go bridge
+Near Side of Chasm
+
+>take bridge
+That's fixed in place.
+
+>close bridge
+That's not something you can close.
+
+>take feather
+Taken.
+
+>i
+a feather
+
+>s
+You step gingerly across the plank, which bows under your weight.
+*** You have died ***
