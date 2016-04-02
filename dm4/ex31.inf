@@ -1,0 +1,107 @@
+Constant Story "Example 31";
+Constant Headline "^";
+
+Include "Parser";
+Include "VerbLib";
+
+Object Arcade "Arcade"
+  with description "This is the arcade.",
+  has  light;
+
+Object -> Dan "Dyslexic Dan"
+  with name 'dan' 'dyslexic',
+       grammar [;
+           if (verb_word == 'take') { verb_wordnum++; return 'drop'; }
+           if (verb_word == 'drop') { verb_wordnum++; return 'take'; }
+       ],
+       orders [;
+           Take: "~What,~ says Dan, ~you want me to take ",
+                     (the) noun, "?~";
+           Drop: "~What,~ says Dan, ~you want me to drop ",
+                     (the) noun, "?~";
+           Inv: "~That I can do,~ says Dan. ~I'm empty-handed.~";
+           No: "~Right you be then.~";
+           Yes: "~I'll be having to think about that.~";
+           Insert: "~What,~ says Dan, ~you want me to put ",
+                       (the) noun, " into ", (the) second, "?~";
+           default: "~Don't know how,~ says Dan.";
+       ],
+       initial "Dyslexic Dan is here.",
+  has  animate proper;
+
+Object -> coin "coin"
+  with name 'coin';
+
+Object -> slot "slot"
+  with name 'slot',
+  has  container open static;
+
+[ Initialise;
+  location = Arcade;
+];
+
+Include "Grammar";
+
+#END; ! test
+
+* test
+
+Arcade
+Dyslexic Dan is here.
+You can also see a coin and a slot (which is empty) here.
+
+>take coin
+Taken
+
+>take inventory
+a coin
+
+>drop inventory
+You can't see any such thing
+
+>drop coin into slot
+You put the coin into the slot
+
+>l
+Arcade
+Dyslexic Dan is here.
+You can also see a slot (in which is a coin) here.
+
+>take coin
+Taken.
+
+>take coin into slot
+You can't see any such thing.
+
+>drop coin
+Dropped.
+
+>i
+You are carrying nothing.
+
+>dan, take coin
+"What," says Dan, "you want me to drop the coin?"
+
+>dan, drop coin
+"What," says Dan, "you want me to take the coin?"
+
+>dan, take inventory
+"Don't know how," says Dan.
+
+>dan, drop inventory
+"That I can do," says Dan. "I'm empty-handed."
+
+>dan, i
+"That I can do," says Dan. "I'm empty-handed."
+
+>dan, no
+"Right you be then."
+
+>dan, yes
+"I'll be having to think about that."
+
+>dan, drop coin into slot
+"Don't know how," says Dan.
+
+>dan, take coin into slot
+"What," says Dan, "you want me to put the coin into the slot?"
