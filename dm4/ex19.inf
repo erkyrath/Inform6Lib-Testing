@@ -8,6 +8,9 @@ Object Test_Chamber "Test Chamber"
   with description "This is the Test Chamber.",
   has  light;
 
+Object -> rock "rock"
+  with name 'rock';
+
 Object -> macrame_bag "macrame bag"
   with name 'macrame' 'bag' 'string' 'net' 'sack',
        react_before [;
@@ -30,6 +33,9 @@ Object -> macrame_bag "macrame bag"
            ".";
        ],
   has  container transparent openable;
+
+! The exercise implies that the bag itself should not be takeable, but 
+! the answer code does not implement this.
 
 Object -> -> "gold watch"
   with name 'gold' 'watch',
@@ -93,4 +99,19 @@ You are carrying nothing.
 That's already closed.
 
 >set watch to 12
+The gold watch is inside the bag.
+
+>touch bag
+You feel nothing unexpected.
+
+>touch watch
+The gold watch is inside the bag.
+
+>get rock
+Taken.
+
+>throw rock at bag
+Futile.
+
+>throw rock at watch
 The gold watch is inside the bag.
