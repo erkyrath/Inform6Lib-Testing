@@ -1,0 +1,81 @@
+Constant Story "Example 21";
+Constant Headline "^";
+
+Include "Parser";
+Include "VerbLib";
+
+Object OutsideArmoury "Outside Armoury"
+  with description "You're outside the armoury.",
+       e_to illusory_door,
+  has  light;
+
+Object -> illusory_door "ironbound door",
+  with name 'iron' 'ironbound' 'door',
+       door_dir e_to, door_to Armoury,
+       before [;
+           Enter: return self.vanish();
+       ],
+       react_before [;
+           Go: if (noun == e_obj) return self.vanish();
+       ],
+       vanish [;
+           location.(self.door_dir) = self.door_to; remove self;
+           print "The door vanishes, shown for the illusion it is!^";
+           <<Go e_obj>>;
+       ],
+  has  locked lockable door openable static;
+
+Object Armoury "Armoury"
+  with description "This is the armoury.",
+       w_to OutsideArmoury,
+  has  light;
+
+[ Initialise;
+  location = OutsideArmoury;
+];
+
+Include "Grammar";
+
+#END; ! test
+
+* goeast
+
+Outside Armoury
+You can see an ironbound door here.
+
+>take door
+That's fixed in place.
+
+>open door
+It seems to be locked.
+
+>go east
+The door vanishes, shown for the illusion it is!
+Armoury
+
+>w
+Outside Armoury
+
+>x door
+You can't see any such thing.
+
+>e
+Armoury
+
+* enterdoor
+
+Outside Armoury
+You can see an ironbound door here.
+
+>enter door
+The door vanishes, shown for the illusion it is!
+Armoury
+
+>w
+Outside Armoury
+
+>x door
+You can't see any such thing.
+
+>e
+Armoury
