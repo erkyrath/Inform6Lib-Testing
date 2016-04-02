@@ -33,6 +33,7 @@ Include "Grammar";
 * test
 
 Antechamber
+!(in the iron cage)
 An iron-barred cage, large enough to stoop over inside, looms ominously here.
 
 >x cage
@@ -49,6 +50,7 @@ You close the iron cage.
 
 >l
 Antechamber
+!(in the iron cage)
 The iron cage is closed.
 
 >enter cage
@@ -59,6 +61,7 @@ You open the iron cage.
 
 >l
 Antechamber
+!(in the iron cage)
 An iron-barred cage, large enough to stoop over inside, looms ominously here.
 
 >enter cage
@@ -84,6 +87,7 @@ You open the iron cage.
 >exit cage
 You get out of the iron cage.
 Antechamber
+!(in the iron cage)
 An iron-barred cage, large enough to stoop over inside, looms ominously here.
 
 >in
@@ -96,4 +100,5 @@ You stare out through the bars.
 >out
 You get out of the iron cage.
 Antechamber
+!(in the iron cage)
 An iron-barred cage, large enough to stoop over inside, looms ominously here.
