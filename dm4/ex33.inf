@@ -1,0 +1,398 @@
+Constant Story "Example 33";
+Constant Headline "^";
+
+Statusline time;
+
+Include "Parser";
+Include "VerbLib";
+
+Object Test_Chamber "Test Chamber"
+  with description "This is the Test Chamber.",
+  has  light;
+
+! Added spaces between operands and operators throughout.
+
+[ AlTime x; print (x / 60), ":", (x % 60) / 10, x % 10; ];
+
+Object -> alarm_clock "alarm clock"
+  with name 'alarm' 'clock',
+       alarm_time 480, ! 08:00
+       description [;
+           print "The alarm is ";
+           if (self has on) print "on, "; else print "off, but ";
+           "the clock reads ", (AlTime) the_time,
+           " and the alarm is set for ", (AlTime) self.alarm_time, ".";
+       ],
+       react_after [;
+           Inv: if (self in player) { new_line; <<Examine self>>; }
+           Look: if (self in location) { new_line; <<Examine self>>; }
+       ],
+       daemon [ td;
+           td = (1440 + the_time - self.alarm_time) % 1440;
+           if (td >= 0 && td <= 3 && self has on)
+               "^Beep! Beep! The alarm goes off.";
+       ],
+       grammar [; return 'alarm,'; ],
+       orders [;
+           SwitchOn: give self on; StartDaemon(self);
+               "~Alarm set.~";
+           SwitchOff: give self ~on; StopDaemon(self);
+               "~Alarm off.~";
+           SetTo: self.alarm_time = noun; <<Examine self>>;
+           default: "~On, off or a time of day, pliz.~";
+       ],
+       life [;
+           "[Try ~clock, something~ to address the clock.]";
+       ],
+  has  talkable;
+
+[ Initialise;
+  location = Test_Chamber;
+  SetTime(477, 1); ! 07:57, 1 min per turn
+];
+
+Include "Grammar";
+
+! The grammar for ex 33 uses the lengthy TimeOfDay parsing routine, which is
+! also the answer to ex 88. To avoid duplication of code, we could:
+! -Do tests for both exercises here.
+! -Pull shared code into a common file and include it in both here and in ex88.
+! -Replace TimeOfDay with something simpler here and only use it in ex88.
+
+Constant TWELVE_HOURS = 720;
+
+[ HoursMinsWordToTime hour minute word x;
+  if (hour >= 24) return -1;
+  if (minute >= 60) return -1;
+  x = hour * 60 + minute; if (hour >= 13) return x;
+  x = x % TWELVE_HOURS; if (word == 'pm') x = x + TWELVE_HOURS;
+  if (word ~= 'am' or 'pm' && hour == 12) x = x + TWELVE_HOURS;
+  return x;
+];
+
+[ ExtendedTryNumber wordnum i j;
+  i = wn; wn = wordnum; j = NextWordStopped(); wn = i;
+  switch (j) {
+      'twenty-one': return 21;
+      'twenty-two': return 22;
+      'twenty-three': return 23;
+      'twenty-four': return 24;
+      'twenty-five': return 25;
+      'twenty-six': return 26;
+      'twenty-seven': return 27;
+      'twenty-eight': return 28;
+      'twenty-nine': return 29;
+      'thirty': return 30;
+      default: return TryNumber(wordnum);
+  }
+];
+
+[ TimeOfDay first_word second_word at length flag illegal_char
+      offhour hr mn i;
+  first_word = NextWordStopped();
+  if (first_word == -1) return GPR_FAIL;
+  switch (first_word) {
+      'midnight': parsed_number = 0; return GPR_NUMBER;
+      'midday', 'noon': parsed_number = TWELVE_HOURS;
+          return GPR_NUMBER;
+  }
+  ! Next try the format 12:02
+  at = WordAddress(wn - 1); length = WordLength(wn - 1);
+  for (i = 0: i < length: i++) {
+      switch (at->i) {
+          ':': if (flag == false && i > 0 && i < length - 1) flag = true;
+               else illegal_char = true;
+          '0', '1', '2', '3', '4', '5', '6', '7', '8', '9': ;
+          default: illegal_char = true;
+      }
+  }
+  if (length < 3 || length > 5 || illegal_char) flag = false;
+  if (flag) {
+      for (i = 0: at->i ~= ':': i++, hr = hr * 10) hr = hr + at->i - '0';
+      hr = hr / 10;
+      for (i++: i < length: i++, mn = mn * 10) mn = mn + at->i - '0';
+      mn = mn / 10;
+      second_word = NextWordStopped();
+      parsed_number = HoursMinsWordToTime(hr, mn, second_word);
+      if (parsed_number == -1) return GPR_FAIL;
+      if (second_word ~= 'pm' or 'am') wn--;
+      return GPR_NUMBER;
+  }
+  ! Lastly the wordy format
+  offhour = -1;
+  if (first_word == 'half') offhour = 30;
+  if (first_word == 'quarter') offhour = 15;
+  if (offhour < 0) offhour = ExtendedTryNumber(wn - 1);
+  if (offhour < 0 || offhour >= 60) return GPR_FAIL;
+  second_word = NextWordStopped();
+  switch (second_word) {
+      ! "six o'clock", "six"
+      'o^clock', 'am', 'pm', -1:
+          hr = offhour; if (hr > 12) return GPR_FAIL;
+      ! "quarter to six", "twenty past midnight"
+      'to', 'past':
+          mn = offhour; hr = ExtendedTryNumber(wn);
+          if (hr <= 0) {
+              switch (NextWordStopped()) {
+                  'noon', 'midday': hr = 12;
+                  'midnight': hr = 0;
+                  default: return GPR_FAIL;
+              }
+          } else wn++;
+          if (hr >= 13) return GPR_FAIL;
+          if (second_word == 'to') {
+              mn = 60 - mn; hr--; if (hr < 0) hr = 23;
+          }
+          second_word = NextWordStopped();
+      ! "six thirty"
+      default:
+          hr = offhour; mn = ExtendedTryNumber(--wn);
+          if (mn < 0 || mn >= 60) return GPR_FAIL;
+          wn++; second_word = NextWordStopped();
+  }
+  parsed_number = HoursMinsWordToTime(hr, mn, second_word);
+  if (parsed_number < 0) return GPR_FAIL;
+  if (second_word ~= 'pm' or 'am' or 'o^clock') wn--;
+  return GPR_NUMBER;
+];
+
+Verb 'alarm,'
+    * 'on' -> SwitchOn
+    * 'off' -> SwitchOff
+    * TimeOfDay -> SetTo;
+
+#END; ! test
+
+* test
+
+Test Chamber
+You can see an alarm clock here.
+The alarm is off, but the clock reads 7:57 and the alarm is set for 8:00.
+
+# test alarm clock's behavior
+
+>turn on clock
+That's not something you can switch.
+
+>clock, on
+"Alarm set."
+!Beep! Beep! The alarm goes off.
+
+>x clock
+The alarm is on, the clock reads 7:59 and the alarm is set for 8:00.
+Beep! Beep! The alarm goes off.
+
+>take clock
+Taken
+Beep! Beep! The alarm goes off.
+
+>i
+an alarm clock
+The alarm is on, the clock reads 8:01 and the alarm is set for 8:00.
+Beep! Beep! The alarm goes off.
+
+>l
+Test Chamber
+!The alarm is on
+Beep! Beep! The alarm goes off.
+
+>drop clock
+Dropped.
+!Beep! Beep! The alarm goes off.
+
+>l
+Test Chamber
+You can see an alarm clock here.
+The alarm is on, the clock reads 8:04 and the alarm is set for 8:00.
+
+>ask clock for time
+You can only do that to something animate.
+
+>ask clock about time
+[Try "clock, something" to address the clock.]
+!Beep! Beep! The alarm goes off.
+
+>clock, 8:06
+The alarm is on, the clock reads 8:06 and the alarm is set for 8:06.
+Beep! Beep! The alarm goes off.
+
+>clock, off
+"Alarm off."
+!Beep! Beep! The alarm goes off.
+
+>clock, on
+"Alarm set."
+Beep! Beep! The alarm goes off.
+
+>x clock
+The alarm is on, the clock reads 8:09 and the alarm is set for 8:06.
+!Beep! Beep! The alarm goes off.
+
+>clock, off
+"Alarm off."
+!Beep! Beep! The alarm goes off.
+
+>clock, 8:12
+The alarm is off, but the clock reads 8:11 and the alarm is set for 8:12.
+!Beep! Beep! The alarm goes off.
+
+>x clock
+The alarm is off, but the clock reads 8:12 and the alarm is set for 8:12.
+!Beep! Beep! The alarm goes off.
+
+>g
+The alarm is off, but the clock reads 8:13 and the alarm is set for 8:12.
+!Beep! Beep! The alarm goes off.
+
+# test time value parsing
+# this could be moved to ex 88
+
+>clock, noon
+the alarm is set for 12:00.
+
+>clock, midnight
+the alarm is set for 0:00.
+
+>clock, midday
+the alarm is set for 12:00.
+
+>clock, 0
+the alarm is set for 0:00.
+
+>clock, 11
+the alarm is set for 11:00.
+
+>clock, 12
+the alarm is set for 12:00.
+
+>clock, 13
+"On, off or a time of day, pliz."
+
+>clock, -1
+"On, off or a time of day, pliz."
+
+>clock, 01
+the alarm is set for 1:00.
+
+>clock, 2:
+"On, off or a time of day, pliz."
+
+>clock, 3:1
+the alarm is set for 3:01.
+
+>clock, 04:59
+the alarm is set for 4:59.
+
+>clock, 4:60
+"On, off or a time of day, pliz."
+
+>clock, 5:00
+the alarm is set for 5:00.
+
+>clock, 6::00
+"On, off or a time of day, pliz."
+
+>clock, 7:100
+"On, off or a time of day, pliz."
+
+>clock, 8 am
+the alarm is set for 8:00.
+
+>clock, 9 pm
+the alarm is set for 21:00.
+
+>clock, 10:05 am
+the alarm is set for 10:05.
+
+>clock, 10:05 pm
+the alarm is set for 22:05.
+
+>clock, 23:00 am
+the alarm is set for 23:00.
+
+>clock, 23:00 xyzzy
+"On, off or a time of day, pliz."
+
+>clock, 6 o'clock
+the alarm is set for 6:00.
+
+>clock, 6 o'clock pm
+"On, off or a time of day, pliz."
+
+>clock, 6 pm o'clock
+"On, off or a time of day, pliz."
+
+>clock, 7:00 o'clock
+"On, off or a time of day, pliz."
+
+>clock, zero
+"On, off or a time of day, pliz."
+
+>clock, one
+the alarm is set for 1:00.
+
+>clock, eleven
+the alarm is set for 11:00.
+
+>clock, twelve
+the alarm is set for 12:00.
+
+>clock, thirteen
+"On, off or a time of day, pliz."
+
+>clock, six zero
+"On, off or a time of day, pliz."
+
+>clock, six one
+the alarm is set for 6:01.
+
+>clock, six twenty
+the alarm is set for 6:20.
+
+>clock, six twenty-one
+the alarm is set for 6:21.
+
+>clock, six thirty
+the alarm is set for 6:30.
+
+>clock, six thirty-one
+"On, off or a time of day, pliz."
+
+>clock, six thirty one
+"On, off or a time of day, pliz."
+
+>clock, six 30
+the alarm is set for 6:30.
+
+>clock, six 30 five
+"On, off or a time of day, pliz."
+
+>clock, quarter past eight
+the alarm is set for 8:15.
+
+>clock, quarter past eight o'clock
+the alarm is set for 8:15.
+
+>clock, quarter past eight pm
+the alarm is set for 20:15.
+
+>clock, quarter past eight am
+the alarm is set for 8:15.
+
+>clock, quarter pat eight o'clock am
+"On, off or a time of day, pliz."
+
+>clock, quarter past 8
+the alarm is set for 8:15.
+
+>clock, quarter past 8:30
+"On, off or a time of day, pliz."
+
+>clock, half past eight
+the alarm is set for 8:30.
+
+>clock, quarter to nine
+the alarm is set for 8:45.
+
+>clock, quarter thirty o'clock
+the alarm is set for 15:30.
