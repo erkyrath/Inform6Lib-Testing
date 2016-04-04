@@ -1,0 +1,101 @@
+Constant Story "Example 35";
+Constant Headline "^";
+
+Include "Parser";
+Include "VerbLib";
+
+Object Mess_Hall "Mess Hall"
+  with description "This is the mess hall.",
+  has  light;
+
+Object -> replicator "replicator"
+  with name 'replicator',
+       grammar [; return 'rc,'; ],
+       orders [;
+           Give:
+               if (noun in self)
+                   "The replicator serves up a cup of ",
+                   (name) noun, " which you drink eagerly.";
+               "~That is not something I can replicate.~";
+           default: "The replicator is unable to oblige.";
+       ],
+       life [;
+           "The replicator has no conversational skill.";
+       ],
+  has  talkable static;
+
+Object -> -> "Earl Grey tea" with name 'earl' 'grey' 'tea';
+Object -> -> "Aldebaran brandy" with name 'aldebaran' 'brandy';
+Object -> -> "distilled water" with name 'distilled' 'water';
+
+[ Initialise;
+  location = Mess_Hall;
+];
+
+Include "Grammar";
+
+Verb 'rc,' * held -> Give;
+
+#END; ! test
+
+* test
+
+Mess Hall
+You can see a replicator here.
+
+>take replicator
+That's fixed in place.
+
+>x replicator
+You see nothing special about the replicator.
+
+>look in replicator
+You find nothing of interest.
+
+>take all from replicator
+That can't contain things.
+
+>x tea
+You can't see any such thing.
+
+>x brandy
+You can't see any such thing.
+
+>x water
+You can't see any such thing.
+
+>ask replicator for tea
+You can only do that to something animate.
+
+>ask replicator about tea
+The replicator has no conversational skill.
+
+>replicator, give tea to me
+The replicator is unable to oblige.
+
+>replicator, tea
+The replicator serves up a cup of Earl Grey tea which you drink eagerly.
+
+>replicator, tea earl grey
+The replicator serves up a cup of Earl Grey tea which you drink eagerly.
+
+>replicator, brandy
+The replicator serves up a cup of Aldebaran brandy which you drink eagerly.
+
+>replicator, aldebaran brandy
+The replicator serves up a cup of Aldebaran brandy which you drink eagerly.
+
+>replicator, water
+The replicator serves up a cup of distilled water which you drink eagerly.
+
+>replicator, distilled water
+The replicator serves up a cup of distilled water which you drink eagerly.
+
+>replicator, coffee
+The replicator is unable to oblige.
+
+>replicator, me
+"That is not something I can replicate."
+
+>replicator, replicator
+"That is not something I can replicate."

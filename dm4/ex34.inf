@@ -1,0 +1,83 @@
+Constant Story "Example 34";
+Constant Headline "^";
+
+Include "Parser";
+Include "VerbLib";
+
+Object Alien_Planet "Alien Planet"
+  with description "This is an alien planet.",
+  has  light;
+
+Object -> tricorder "tricorder"
+  with name 'tricorder',
+       grammar [; return 'tc,'; ],
+       orders [;
+           Examine: if (noun == player) "~You radiate life signs.~";
+               print "~", (The)  noun, " radiates ";
+               if (noun hasnt animate) print "no ";
+               "life signs.~";
+           default: "The tricorder bleeps.";
+       ],
+       life [;
+           "The tricorder is too simple.";
+       ],
+  has  talkable;
+
+Object -> "quartz stratum"
+    with name 'quartz' 'stratum',
+    has  static;
+
+Object -> "small furry alien"
+    with name 'small' 'furry' 'alien',
+    has  animate;
+
+[ Initialise;
+  location = Alien_Planet;
+];
+
+Include "Grammar";
+
+Verb 'tc,' *  noun -> Examine;
+
+#END; ! test
+
+* test
+
+Alien Planet
+You can see a tricorder, a quartz stratum and a small furry alien here.
+
+>tricorder, x me
+The tricorder bleeps.
+
+>tricorder, me
+"You radiate life signs."
+
+>take tricorder
+Taken.
+
+>i
+a tricorder
+
+>tricorder, me
+"You radiate life signs."
+
+>tricorder, the quartz stratum
+"The quartz stratum radiates no life signs."
+
+>tricorder, alien
+"The small furry alien radiates life signs."
+
+>tricorder, tricorder
+"The tricorder radiates no life signs."
+
+>tricorder, all
+The tricorder bleeps.
+
+>ask tricorder about alien
+The tricorder is too simple.
+
+>say "alien" to tricorder
+The tricorder is too simple.
+
+>tricorder,
+The tricorder bleeps.

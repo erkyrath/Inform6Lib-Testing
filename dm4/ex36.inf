@@ -1,0 +1,189 @@
+Constant Story "Example 36";
+Constant Headline "^";
+
+Include "Parser";
+Include "VerbLib";
+
+class StarFleetOfficer
+  with name 'officer',
+  has  animate proper;
+
+class ShipRoom
+  has  light;
+
+ShipRoom Quarters "Crew Quarters"
+  with description "These are the crew quarters.",
+       e_to Corridor;
+
+ShipRoom Corridor "Corridor"
+  with description "This is a corridor.",
+       w_to Quarters,
+       s_to Engineering,
+       n_to Bridge,
+       e_to Medical;
+
+ShipRoom Engineering "Engineering"
+  with description "This is engineering.",
+       n_to Corridor;
+
+StarFleetOfficer -> Commander_Lebling "Commander Lebling"
+  with name 'commander' 'lebling';
+
+ShipRoom Bridge "Bridge"
+  with description "This is the bridge.",
+       s_to Corridor;
+
+StarFleetOfficer -> Admiral_Blank "Admiral Blank"
+  with name 'admiral' 'blank';
+
+ShipRoom Medical "Medical Bay"
+  with description "This is the medical bay.",
+       w_to Corridor;
+
+StarFleetOfficer -> Doctor_Meretzky "Doctor Meretzky"
+  with name 'doctor' 'meretzky';
+
+StarFleetOfficer Commander_Doto "Commander Doto"
+  with name 'commander' 'doto';
+
+! We allow the player to refer to the badge as "computer" rather than modeling
+! a separate computer object.
+
+Object badge "communications badge"
+  with name 'communications' 'badge' 'computer',
+       grammar [; return 'stc,'; ],
+       orders [;
+           Examine:
+               if (parent(noun))
+                   "~", (name) noun, " is in ", (name) parent(noun), ".~";
+               "~", (name) noun, " is no longer aboard this demonstration
+               game.~";
+           default: "The computer's only really good for locating the crew.";
+       ],
+  has  talkable clothing;
+
+[ Initialise;
+  location = Quarters;
+  move badge to player;
+  give badge worn;
+];
+
+Include "Grammar";
+
+[ Crew i;
+  switch(scope_stage)
+  {  1: rfalse;
+     2: objectloop (i ofclass StarFleetOfficer) PlaceInScope(i); rtrue;
+  }
+];
+Verb 'stc,' * 'where' 'is' scope=Crew -> Examine;
+
+#END; ! test
+
+* test
+
+Crew Quarters
+
+>x blank
+You can't see any such thing.
+
+>x lebling
+You can't see any such thing.
+
+>x meretzky
+You can't see any such thing.
+
+>x doto
+You can't see any such thing.
+
+>i
+a communications badge (being worn)
+
+>computer, hello
+The computer's only really good for locating the crew.
+
+>ask computer about admiral
+There is no reply.
+
+>where is admiral
+That's not a verb I recognise.
+
+>computer, where is admiral blank
+"Admiral Blank is in Bridge."
+
+>computer, where is admiral blank?
+The computer's only really good for locating the crew.
+
+>badge, where is commander lebling
+"Commander Lebling is in Engineering."
+
+>communications badge, where is doctor meretzky
+"Doctor Meretzky is in Medical Bay."
+
+# 'communications' == 'communicator'
+>communicator, where is commander doto
+"Commander Doto is no longer aboard this demonstration game."
+
+>computer, where is commander
+Which do you mean
+Commander Lebling
+Commander Doto
+!Admiral Blank
+!Doctor Meretzky
+
+>lebling
+"Commander Lebling is in Engineering."
+
+>computer, where is officer
+Which do you mean
+Commander Lebling
+Admiral Blank
+Doctor Meretzky
+Commander Doto
+
+>doctor
+"Doctor Meretzky is in Medical Bay."
+
+>computer, where is comminder doto
+The computer's only really good for locating the crew.
+
+>computer, where is myself
+The computer's only really good for locating the crew.
+
+>e
+Corridor
+
+>n
+Bridge
+You can see Admiral Blank here.
+
+>s
+Corridor
+
+>s
+Engineering
+You can see Commander Lebling here.
+
+>n
+Corridor
+
+>e
+Medical Bay
+You can see Doctor Meretzky here.
+
+>w
+Corridor
+
+>drop badge
+(first taking the communications badge off)
+You take off the communications badge.
+Dropped.
+
+>computer, where is admiral
+"Admiral Blank is in Bridge."
+
+>w
+Crew Quarters
+
+>computer, where is doctor
+You seem to want to talk to someone, but I can't see whom.
