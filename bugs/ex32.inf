@@ -1,0 +1,77 @@
+Constant Story "Example 32";
+Constant Headline "^";
+
+Include "Parser";
+Include "VerbLib";
+
+Object Field "Field"
+  with description "This is the field.",
+  has  light;
+
+! Modified to remove Dan's dyslexia (already tested in ex31) and retain just
+! his personalized 'examine' grammar.
+
+Object -> Dan "Dyslexic Dan"
+  with name 'dan' 'dyslexic',
+       grammar [;
+           if (verb_word == 'examine' or 'x//') {
+               verb_wordnum++; return -'danx';
+           }
+       ],
+       orders [;
+           Examine: "~What,~ says Dan, ~you want me to examine ",
+                        (the) noun, "?~";
+           Inv: "~That I can do,~ says Dan. ~I'm empty-handed.~";
+           default: "~Don't know how,~ says Dan.";
+       ],
+       initial "Dyslexic Dan is here.",
+  has  animate proper;
+
+Object -> "cow pie"
+  with name 'cow' 'pie',
+       description "That's one healthy cow.",
+       before [;
+           Examine: ;
+           default: "Nope.";
+       ];
+
+[ Initialise;
+  location = Field;
+];
+
+Include "Grammar";
+
+Verb 'danx' * 'conscience' -> Inv;
+
+#END; ! test
+
+* test
+
+>x pie
+That's one healthy cow.
+
+>x conscience
+You can't see any such thing.
+
+>x
+What do you want to examine?
+
+>cow pie
+That's one healthy cow.
+
+>dan, jump
+"Don't know how," says Dan.
+
+>dan, x pie
+"What," says Dan, "you want me to examine the cow pie?"
+# (Failure:) "Don't know how," says Dan.
+
+>dan, x conscience
+"That I can do," says Dan. "I'm empty-handed."
+
+# The following test puts the 6/11 library into an infinite loop! So I've commented it out.
+
+# >dan, x
+# (the cow pie)
+# "What," says Dan, "you want me to examine the cow pie?"
+
