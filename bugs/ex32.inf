@@ -15,7 +15,7 @@ Object -> Dan "Dyslexic Dan"
   with name 'dan' 'dyslexic',
        grammar [;
            if (verb_word == 'examine' or 'x//') {
-               verb_wordnum++; return -'danx';
+               verb_wordnum++; return -'danx,';
            }
        ],
        orders [;
@@ -41,7 +41,7 @@ Object -> "cow pie"
 
 Include "Grammar";
 
-Verb 'danx' * 'conscience' -> Inv;
+Verb 'danx,' * 'conscience' -> Inv;
 
 #END; ! test
 
