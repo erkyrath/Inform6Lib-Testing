@@ -3,7 +3,7 @@ This is a work-in-progress collection of tests for the Inform 6 library. The int
 To run these tests, you must have:
 
 - The Inform 6 compiler.
-- A Glulx interpreter compiled with the RemGlk library.
+- Glulx and Z-code interpreters compiled with the RemGlk library.
 - The Inform libraries release 6/11. This is set up as a submodule.
 
 ## Running
@@ -20,6 +20,11 @@ Then you can run this sort of command (assuming that `inform` is [Inform 6][i6] 
 [i6]: https://github.com/DavidKinder/Inform6
 [Glulxe]: https://github.com/erkyrath/glulxe
 [RemGlk]: https://github.com/erkyrath/remglk
+[Fizmo]: https://christoph-ender.de/fizmo/
+
+To run the same tests in Z-code (where `fizmor` is [Fizmo][]+[RemGlk][]):
+
+    python3 dotest.py -Z --terp fizmor */*.inf
 
 ## The Tests
 
