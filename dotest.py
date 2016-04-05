@@ -31,6 +31,12 @@ popt.add_option('-c', '--compiler',
                 action='store', dest='compilerpath',
                 default='inform',
                 help='Inform 6 compiler')
+popt.add_option('-G', '--glulx',
+                action='store_true', dest='glulxmode',
+                help='Compile to Glulx (default)')
+popt.add_option('-Z', '--zcode',
+                action='store_true', dest='zcodemode',
+                help='Compile to Z-code')
 popt.add_option('--library', '--lib',
                 action='store', dest='librarypath',
                 default='inform6lib',
@@ -54,7 +60,7 @@ popt.add_option('-v', '--verbose',
 (opts, args) = popt.parse_args()
 
 if (not args):
-    print('usage: regtest.py TESTFILES...')
+    print('usage: dotest.py [options] TESTFILES...')
     sys.exit(1)
 
 class RegTest:
@@ -605,14 +611,18 @@ def run(test, gamefile):
     
 
 # Compile a test file with the Inform 6 compiler. Return the filename
-# of the compiled Glulx file.
-def compile_testfile(filename):
-    if filename.endswith('.inf'):
-        outname = filename[:-4] + '.ulx'
-    else:
-        outname = filename + '.ulx'
+# of the compiled game file.
+def compile_testfile(filename, targetarg):
+    suffix = '.ulx'
+    if targetarg == '-~G':
+        suffix = '.z5'
         
-    args = [ opts.compilerpath, '-G' ]
+    if filename.endswith('.inf'):
+        outname = filename[:-4] + suffix
+    else:
+        outname = filename + suffix
+        
+    args = [ opts.compilerpath, targetarg ]
     if (opts.librarypath):
         args.append('+'+opts.librarypath)
     args.append(filename)
@@ -629,6 +639,12 @@ if (not terppath):
     print('No interpreter path specified')
     sys.exit(-1)
 
+targetarg = '-G'
+if opts.zcodemode and opts.glulxmode:
+    raise Exception('Cannot specify both -G and -Z')
+if opts.zcodemode:
+    targetarg = '-~G'
+    
 # We'll need a global testmap for the list_commands call, which substitutes
 # includes.
 testmap = None
@@ -637,7 +653,7 @@ for arg in args:
     try:
         testls = parse_testfile(arg)
         testmap = dict([(test.name, test) for test in testls])
-        gamefile = compile_testfile(arg)
+        gamefile = compile_testfile(arg, targetarg)
         for test in testls:
             run(test, gamefile)
         testmap = None
