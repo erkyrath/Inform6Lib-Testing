@@ -1,0 +1,129 @@
+Constant Story "Example 38";
+Constant Headline "^";
+
+Include "Parser";
+Include "VerbLib";
+
+Object Bridge "Bridge"
+  with description
+           "This is the bridge.^^The notorious tyrant Noslen Maharg
+           gesticulates wildly on the viewscreen.",
+       s_to Corridor,
+  has  light;
+
+Object Corridor "Corridor"
+  with description "This is a corridor.",
+       n_to Bridge,
+  has  light;
+
+! For simplicity, we don't model a separate viewscreen.
+Object noslen_maharg "Noslen Maharg"
+  with name 'noslen' 'maharg' 'tyrant' 'viewscreen' 'view' 'screen',
+       description
+           "On the screen you see Noslen Maharg, surrounded by the harsh
+           terrain of the planet Mrofni. His professorial demeanor is
+           belied by hard eyes and dangerously flared nostrils.",
+       before [;
+           Examine: ;
+       ],
+       orders [;
+           NotUnderstood: "~I grow impatient with this foolishness.~";
+           default: "~Never, imperialist scum!~";
+       ],
+       life [;
+           Show, Ask, Answer, Tell: "~Of what concern is that to me?~";
+       ],
+  has  animate proper;
+
+Object -> rock "rock"
+  with name 'rock';
+
+[ InScope;
+  if (action_to_be == ##Examine or ##Show && location == Bridge)
+      PlaceInScope(noslen_maharg);
+  ! This allows the player to talk to Noslen from anywhere on the ship.
+  if (scope_reason == TALKING_REASON)
+      PlaceInScope(noslen_maharg);
+  rfalse;
+];
+
+[ Initialise;
+  location = Bridge;
+  move rock to player;
+];
+
+Include "Grammar";
+
+#END; ! test
+
+* test
+
+Bridge
+The notorious tyrant Noslen Maharg gesticulates wildly on the viewscreen.
+
+>x screen
+On the screen you see Noslen Maharg, surrounded by the harsh terrain of the
+
+>x noslen
+On the screen you see Noslen Maharg, surrounded by the harsh terrain of the
+
+>attack noslen
+You can't see any such thing.
+
+# Not ideal, but a consequence of not modeling the screen.
+>take screen
+You can't see any such thing.
+
+>i
+a rock
+
+>show rock to noslen
+"Of what concern is that to me?"
+
+>ask noslen about captain
+"Of what concern is that to me?"
+
+>say "hello" to noslen
+"Of what concern is that to me?"
+
+>tell noslen about interactive fiction
+"Of what concern is that to me?"
+
+>noslen, jump
+"Never, imperialist scum!"
+
+>noslen, xyzzy
+"I grow impatient with this foolishness."
+
+>noslen,
+"I grow impatient with this foolishness."
+
+>s
+Corridor
+
+>x maharg
+You can't see any such thing
+
+>attack maharg
+You can't see any such thing
+
+>show rock to maharg
+You can only do that to something animate.
+
+>show rock to asdf
+You can only do that to something animate.
+
+>ask tyrant about captain
+"Of what concern is that to me?"
+
+>say "hello" to noslen maharg
+"Of what concern is that to me?"
+
+>tell noslen about interactive fiction
+"Of what concern is that to me?"
+
+>noslen, jump
+"Never, imperialist scum!"
+
+>noslen, xyzzy
+"I grow impatient with this foolishness."
