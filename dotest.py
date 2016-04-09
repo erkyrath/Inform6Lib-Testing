@@ -18,6 +18,8 @@ import fnmatch
 import subprocess
 import re
 import types
+import math
+import time
 
 terppath = None
 terpargs = []
@@ -50,6 +52,16 @@ popt.add_option('-l', '--list',
 popt.add_option('-p', '--pre', '--precommand',
                 action='append', dest='precommands',
                 help='extra command to execute before (each) test')
+
+def timeout_option_cb(option, opt_str, value, parser):
+    if value < 0.0 or math.isnan(value):
+        raise optparse.OptionValueError('Timeout must be non-negative.')
+    setattr(parser.values, option.dest, value)
+
+popt.add_option('-t', '--timeout',
+                action='callback', callback=timeout_option_cb,
+                dest='timeout_secs', type='float', default=1.0,
+                help='timeout interval (default: 1.0 secs)')
 popt.add_option('--vital',
                 action='store_true', dest='vital',
                 help='abort a test on the first error')
@@ -344,10 +356,13 @@ class GameStateRemGlk(GameState):
         output = bytearray()
         update = None
 
-        # Read until a complete JSON object comes through the pipe.
-        # We sneakily rely on the fact that RemGlk always uses dicts
-        # as the JSON object, so it always ends with "}".
-        while (select.select([self.outfile],[],[])[0] != []):
+        timeout_time = time.time() + opts.timeout_secs
+        timeout_secs = opts.timeout_secs
+
+        # Read until a complete JSON object comes through the pipe or we time
+        # out. We sneakily rely on the fact that RemGlk always uses dicts as
+        # the JSON object, so it always ends with "}".
+        while (select.select([self.outfile],[],[], timeout_secs)[0] != []):
             ch = self.outfile.read(1)
             if ch == b'':
                 # End of stream. Hopefully we have a valid object.
@@ -363,6 +378,12 @@ class GameStateRemGlk(GameState):
                     break
                 except:
                     pass
+            timeout_secs = timeout_time - time.time()
+            if timeout_secs <= 0.0:
+                break
+
+        if not update:
+            raise Exception('Timed out')
 
         # Parse the update object. This is complicated. For the format,
         # see http://eblong.com/zarf/glk/glkote/docs.html
