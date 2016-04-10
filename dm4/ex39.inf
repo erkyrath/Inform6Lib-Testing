@@ -1,0 +1,139 @@
+Constant Story "Example 39";
+Constant Headline "^";
+
+Include "Parser";
+Include "VerbLib";
+
+Object Test_Chamber "Test Chamber"
+  with description "This is the Test Chamber.",
+  has  light;
+
+Object sealed_room "Sealed Room"
+  with description
+           "I'm in a sealed room, like a squash court without a door,
+           maybe six or seven yards across",
+  has  light;
+
+Object -> ball "red ball" with name 'red' 'ball';
+
+Object -> fish "fish"
+  with name 'fish',
+  has  edible;
+
+Object -> martha "Martha"
+  with name 'martha',
+       orders [ r;
+           r = parent(self);
+           Give:
+               if (noun notin r) "~That's beyond my telekinesis.~";
+               if (noun == self) "~Teleportation's too hard for me.~";
+               move noun to player;
+               "~Here goes...~ and Martha's telekinetic talents
+                   magically bring ", (the) noun, " to your hands.";
+           Look:
+               print "~", (string) r.description;
+               if (children(r) == 1) ". There's nothing here but me.~";
+               print ". I can see ";
+               WriteListFrom(child(r), CONCEAL_BIT + ENGLISH_BIT);
+               ".~";
+           default: "~Afraid I can't help you there.~";
+       ],
+       life [;
+           Ask: "~You're on your own this time.~";
+           Tell: "Martha clucks sympathetically.";
+           Answer: "~I'll be darned,~ Martha replies.";
+       ],
+  has  animate female concealed proper;
+
+[ InScope actor;
+  if (actor == martha) PlaceInScope(player);
+  if (actor == player && scope_reason == TALKING_REASON)
+      PlaceInScope(martha);
+  rfalse;
+];
+
+[ Initialise;
+  location = Test_Chamber;
+];
+
+Include "Grammar";
+
+#END; ! test
+
+* test
+
+Test Chamber
+!a fish
+!a red ball
+
+>x martha
+You can't see any such thing.
+
+>take martha
+You can't see any such thing.
+
+>martha, hello
+"Afraid I can't help you there."
+
+>martha, look
+"I'm in a sealed room, like a squash court without a door, maybe six or seven
+I can see a red ball and a fish."
+
+>i
+You are carrying nothing.
+
+>martha, give me the red ball
+"Here goes..." and Martha's telekinetic talents magically bring the red ball to
+
+>i
+a red ball
+
+>martha, look
+"I'm in a sealed room, like a squash court without a door, maybe six or seven
+I can see a fish."
+
+# This translates to NotUnderstood instead of Give, because the ball is no
+# longer in Martha's scope.
+>martha, give me the red ball
+"Afraid I can't help you there."
+
+>ask martha for fish
+You can't see any such thing.
+
+>martha, give me the fish
+"Here goes..." and Martha's telekinetic talents magically bring the fish to
+
+>i
+a fish
+a red ball
+
+>drop fish
+Dropped.
+
+>martha, give me fish
+"Afraid I can't help you there."
+
+>eat fish
+(first taking the fish)
+You eat the fish. Not bad.
+
+>martha, give fish to me
+"Afraid I can't help you there."
+
+>martha, give martha to me
+"Teleportation's too hard for me."
+
+>martha, give me to me
+"That's beyond my telekinesis."
+
+>ask martha about ball
+"You're on your own this time."
+
+>say "xyzzy" to martha
+"I'll be darned," Martha replies.
+
+>tell martha about inform
+Martha clucks sympathetically.
+
+>martha, jump
+"Afraid I can't help you there."
