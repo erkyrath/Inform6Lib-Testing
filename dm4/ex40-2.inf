@@ -1,0 +1,37 @@
+Constant Story "Example 40-2";
+Constant Headline "^";
+
+Include "Parser";
+Include "VerbLib";
+
+Object Garden_West "West End of Garden"
+  with description "This is the west end of the garden.",
+       e_to Garden_East;
+
+Object Garden_East "East End of Garden"
+  with description "This is the east end of the garden.",
+       w_to Garden_West;
+
+[ Initialise;
+  location = Garden_West;
+  give player light;
+];
+
+Include "Grammar";
+
+#END; ! test
+
+* test
+
+West End of Garden
+
+>x me
+As good-looking as ever.
+
+>e
+
+East End of Garden
+
+>w
+
+West End of Garden

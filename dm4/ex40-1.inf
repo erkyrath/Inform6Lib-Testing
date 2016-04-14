@@ -1,0 +1,55 @@
+Constant Story "Example 40-1";
+Constant Headline "^";
+
+Include "Parser";
+Include "VerbLib";
+
+Object Garden_West "West End of Garden"
+  with description "This is the west end of the garden.",
+       e_to Garden_East;
+
+Object Garden_East "East End of Garden"
+  with description "This is the east end of the garden.",
+       w_to Garden_West;
+
+Object sun "sun"
+  with name 'sun',
+       description "The sun shines high above you.",
+       before [;
+           Examine: ;
+           default: "The sun is too far away.";
+       ],
+       found_in [; rtrue; ],
+  has  light scenery;
+
+[ Initialise;
+  location = Garden_West;
+];
+
+Include "Grammar";
+
+#END; ! test
+
+* test
+
+West End of Garden
+
+>x me
+As good-looking as ever.
+
+>x sun
+The sun shines high above you.
+
+>take sun
+The sun is too far away.
+
+>e
+
+East End of Garden
+
+>x sun
+The sun shines high above you.
+
+>w
+
+West End of Garden
