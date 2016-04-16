@@ -33,6 +33,7 @@ Include "Grammar";
 * test
 
 West End of Garden
+!dark
 
 >x me
 As good-looking as ever.
@@ -46,6 +47,7 @@ The sun is too far away.
 >e
 
 East End of Garden
+!dark
 
 >x sun
 The sun shines high above you.
@@ -53,3 +55,4 @@ The sun shines high above you.
 >w
 
 West End of Garden
+!dark

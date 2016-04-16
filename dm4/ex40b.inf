@@ -24,6 +24,7 @@ Include "Grammar";
 * test
 
 West End of Garden
+!dark
 
 >x me
 As good-looking as ever.
@@ -31,7 +32,9 @@ As good-looking as ever.
 >e
 
 East End of Garden
+!dark
 
 >w
 
 West End of Garden
+!dark
