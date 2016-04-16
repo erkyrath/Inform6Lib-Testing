@@ -1,0 +1,239 @@
+Constant Story "Example 37";
+Constant Headline "^";
+
+Include "Parser";
+Include "VerbLib";
+
+Object galaxy;
+Object -> "Earth" with name 'earth' 'terra';
+Object -> "Centauro" with name 'centauro';
+Object -> "Destiny" with name 'destiny';
+
+Object Bridge "Bridge"
+  with description "This is the bridge.",
+  has  light;
+
+Object -> Zen "Zen"
+  with name 'zen' 'flight' 'computer',
+       initial "Square lights flicker unpredictably across a hexagonal
+           fascia on one wall, indicating that Zen is on-line.",
+       grammar [; return 'zen,'; ],
+       orders [;
+           ZenScan: "The main screen shows a starfield,
+               turning through ", noun, " degrees.";
+           Go:  "~Confirmed.~ The ship turns to a new bearing.";
+           SetTo: if (noun > 12) "~Standard by ", (number) noun,
+                   " exceeds design tolerances.~";
+               if (noun == 0) "~Confirmed.~ The ship's engines stop.";
+               "~Confirmed.~ The ship's engines step to
+               standard by ", (number) noun, ".";
+           Take: if (noun ~= force_wall) "~Please clarify.~";
+               "~Force wall raised.~";
+           Drop: if (noun ~= blasters)   "~Please clarify.~";
+               "~Battle-computers on line.
+               Neutron blasters cleared for firing.~";
+           NotUnderstood: "~Language banks unable to decode.~";
+           default: "~Information. That function is unavailable.~";
+       ],
+       life [;
+           Ask, Answer, Tell:
+               "[Try ~Zen, something~ to command Zen.]";
+       ],
+  has  talkable proper static;
+
+Object -> -> force_wall "force wall"
+  with name 'force' 'wall' 'shields';
+
+Object -> -> blasters "neutron blasters"
+  with name 'neutron' 'blasters';
+
+[ Initialise;
+  location = Bridge;
+];
+
+Include "Grammar";
+
+[ Planet;
+  switch (scope_stage) {
+      1: rfalse; ! Disallow multiple planets
+      2: ScopeWithin(galaxy); rtrue; ! Scope set to contents of galaxy
+  }
+];
+
+[ ZenScanSub; "This is never called but makes the action exist."; ];
+
+Verb 'zen,'
+    * 'scan' number 'orbital' -> ZenScan
+    * 'set' 'course' 'for' scope=Planet -> Go
+    * 'speed' 'standard' 'by' number -> SetTo
+    * 'raise' held -> Take
+    * 'clear' held 'for' 'firing' -> Drop;
+
+#END; ! test
+
+* test
+
+Bridge
+Square lights flicker unpredictably across a hexagonal fascia on one wall
+
+>take zen
+That's fixed in place
+
+>x zen
+You see nothing special about Zen.
+
+>look in zen
+You find nothing of interest.
+
+>take all from zen
+That can't contain things.
+
+>x shields
+You can't see any such thing.
+
+>x blasters
+You can't see any such thing.
+
+>ask zen about zen
+[Try "Zen, something" to command Zen.]
+
+>tell zen about myself
+[Try "Zen, something" to command Zen.]
+
+>say "hello" to zen
+[Try "Zen, something" to command Zen.]
+
+>zen,
+"Language banks unable to decode."
+
+>zen, hello
+"Language banks unable to decode."
+
+>zen, scan
+"Language banks unable to decode."
+
+>zen, scan 42
+"Language banks unable to decode."
+
+>zen, scan 42 orbital
+The main screen shows a starfield, turning through 42 degrees.
+
+>zen, scan -1 orbital
+"Language banks unable to decode."
+
+>zen, scan 0 orbital
+The main screen shows a starfield, turning through 0 degrees.
+
+>zen, scan 1 orbital
+The main screen shows a starfield, turning through 1 degrees.
+
+>zen, scan 359 orbital
+The main screen shows a starfield, turning through 359 degrees.
+
+>zen, scan 360 orbital
+The main screen shows a starfield, turning through 360 degrees.
+
+>zen, scan 361 orbital
+The main screen shows a starfield, turning through 361 degrees.
+
+>zen, scan twenty orbital
+The main screen shows a starfield, turning through 20 degrees.
+
+>zen, scan twenty-one orbital
+"Language banks unable to decode."
+
+>zen, set
+What do you want Zen to zen, set course for?
+
+>earth
+"Confirmed." The ship turns to a new bearing.
+
+>zen, set course for centauro
+"Confirmed." The ship turns to a new bearing.
+
+>zen, set course for destiny
+"Confirmed." The ship turns to a new bearing.
+
+>zen, set course for terra
+"Confirmed." The ship turns to a new bearing.
+
+>zen, set course for mrofni
+"Language banks unable to decode."
+
+>zen, speed
+"Language banks unable to decode."
+
+>zen, speed standard
+"Language banks unable to decode."
+
+>zen, speed standard by
+"Language banks unable to decode."
+
+>zen, speed standard by -1
+"Language banks unable to decode."
+
+>zen, speed standard by 0
+"Confirmed." The ship's engines stop.
+
+>zen, speed standard by 1
+"Confirmed." The ship's engines step to standard by one.
+
+>zen, speed standard by twelve
+"Confirmed." The ship's engines step to standard by twelve.
+
+>zen, speed standard by 13
+"Standard by thirteen exceeds design tolerances."
+
+>zen, raise
+What do you want Zen to zen, raise?
+
+>shields
+"Force wall raised."
+
+>zen, lower shields
+"Language banks unable to decode."
+
+>zen, raise force wall
+"Force wall raised."
+
+>zen, raise blasters
+"Please clarify."
+
+>zen, raise me
+"Please clarify."
+
+>zen, clear
+What do you want Zen to zen, clear?
+
+>blasters
+"Language banks unable to decode."
+
+>zen, clear
+What do you want Zen to zen, clear?
+
+>blasters for
+"Language banks unable to decode."
+
+>zen, clear
+What do you want Zen to zen, clear?
+
+>blasters for firing
+"Battle-computers on line. Neutron blasters cleared for firing."
+
+>zen, clear neutron blasters
+"Language banks unable to decode."
+
+>zen, clear neutron blasters for
+"Language banks unable to decode."
+
+>zen, clear neutron blasters for firing
+"Battle-computers on line. Neutron blasters cleared for firing."
+
+>zen, clear neturon blasters for firing xyzzy
+"Language banks unable to decode."
+
+>zen, clear shields for firing
+"Please clarify."
+
+>zen, clear zen for firing
+"Please clarify."

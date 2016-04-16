@@ -1,0 +1,272 @@
+Constant Story "Example 41";
+Constant Headline "^";
+
+Include "Parser";
+Include "VerbLib";
+
+Object Troll_Lair "Troll Lair"
+  with description "This is a shadowy cave with a single exit to the east.",
+       e_to Maze;
+
+Object -> rock "rock"
+  with name 'rock';
+
+Object -> bowl "goldfish bowl"
+  with name 'goldfish' 'bowl' 'fishbowl',
+       before [;
+           LetGo:
+               if (noun == jellyfish) {
+                   "The jellyfish is best left in its bowl.";
+               }
+       ],
+  has  open transparent container;
+
+Object -> -> jellyfish "fluorescent jellyfish"
+  with name 'fluorescent' 'jellyfish' 'jelly' 'fish',
+  has  light;
+
+Object -> troll
+  with name 'troll',
+       short_name [;
+           if (~~HasLightSource(self)) {
+               print "fearful ";
+           }
+           print "troll";
+           rtrue;
+       ],
+       initial [x;
+           print (A) self, " ";
+           if (~~HasLightSource(self)) {
+               "blocks the eastern passage and eyes the shadows uneasily.";
+           }
+           objectloop (x in self) {
+               if (HasLightSource(x)) {
+                  "stands off to one side, his face bathed in the light of ",
+                      (a) x, ".";
+               }
+           }
+           "squats in one corner, filling out a bug report.";
+       ],
+       react_before [;
+           Go:
+               if (noun == e_obj && ~~HasLightSource(self)) {
+                   "The troll refuses to budge. ~You give light or you stay!~";
+               }
+       ],
+       react_after [;
+           Drop:
+               if (HasLightSource(noun) && ~~HasLightSource(self)) {
+                   L__M(##Drop, 4, noun);
+                   "^The troll points at ", (the) noun, " and says ~No just
+                       drop light. Give!~";
+               }
+       ],
+       life [;
+           Show:
+               if (HasLightSource(noun)) {
+                   if (HasLightSource(self)) {
+                       "The troll already has a light source.";
+                   }
+                   "The troll looks at ", (the) noun, " with interest. ~Yes!
+                       Give!~";
+               }
+           Give, ThrowAt:
+               if (HasLightSource(self)) {
+                   if (HasLightSource(noun)) {
+                       "The troll already has a light source. You'd best keep
+                           one for yourself.";
+                   }
+                   "The troll is uninterested.";
+               }
+               if (~~HasLightSource(noun)) {
+                   "The troll shakes his head and hands back ", (the) noun,
+                       ". ~Not have light.~";
+               }
+               move noun to troll;
+               "The troll eagerly accepts ", (the) noun, " and stands aside.";
+       ],
+  has  animate transparent;
+
+Object Maze "Maze"
+    with description "This is a maze of twisty little passages, all alike.",
+         w_to Troll_Lair;
+
+Object lamp "lamp"
+  with name 'lamp',
+       before [;
+           Burn: <<SwitchOn self>>;
+       ],
+       after [;
+           SwitchOn: give self light;
+           SwitchOff: give self ~light;
+       ],
+  has  switchable;
+
+[ Initialise;
+  location = Troll_Lair;
+  move lamp to player;
+];
+
+Include "Grammar";
+
+#END; ! test
+
+* lamp
+
+Troll Lair
+A fearful troll blocks the eastern passage and eyes the shadows uneasily.
+a rock
+a goldfish bowl (in which is a fluorescent jellyfish (providing light))
+
+>i
+a lamp
+!a lamp (providing light)
+
+>e
+The troll refuses to budge. "You give light or you stay!"
+
+>kill troll
+Violence isn't the answer to this one.
+
+>take rock
+Taken.
+
+>i
+a rock
+a lamp
+!a lamp (providing light)
+
+>show rock to troll
+The fearful troll is unimpressed.
+
+>give rock to troll
+The troll shakes his head and hands back the rock. "Not have light."
+
+>show lamp to troll
+The fearful troll is unimpressed.
+
+>give lamp to troll
+The troll shakes his head and hands back the lamp. "Not have light."
+
+>drop lamp
+Dropped.
+!The troll points at the lamp
+
+>take lamp
+Taken.
+
+>light lamp
+You switch the lamp on.
+
+>i
+a lamp (providing light)
+a rock
+
+>show lamp to troll
+The troll looks at the lamp with interest. "Yes! Give!"
+
+>drop lamp
+Dropped.
+The troll points at the lamp and says "No just drop light. Give!"
+
+>take lamp
+Taken.
+
+>give lamp to troll
+The troll eagerly accepts the lamp and stands aside.
+
+>l
+Troll Lair
+A troll stands off to one side, his face bathed in the light of a lamp.
+a goldfish bowl (in which is a fluorescent jellyfish (providing light))
+
+>show rock to troll
+The troll is unimpressed.
+
+>give rock to troll
+The troll is uninterested.
+
+>take bowl
+Taken.
+
+>i
+a goldfish bowl
+a fluorescent jellyfish (providing light)
+a rock
+
+>show bowl to troll
+The troll already has a light source.
+
+>throw bowl at troll
+The troll already has a light source. You'd best keep one for yourself.
+
+>e
+Maze
+
+>w
+Troll Lair
+A troll stands off to one side, his face bathed in the light of a lamp.
+
+>drop bowl
+Dropped.
+!The troll points at the goldfish bowl
+
+* fishbowl
+
+Troll Lair
+A fearful troll blocks the eastern passage and eyes the shadows uneasily.
+a rock
+a goldfish bowl (in which is a fluorescent jellyfish (providing light))
+
+>e
+The troll refuses to budge. "You give light or you stay!"
+
+>take bowl
+Taken.
+
+>i
+a goldfish bowl
+a fluorescent jellyfish (providing light)
+a lamp
+!a lamp (providing light)
+
+>look in bowl
+In the goldfish bowl is a fluorescent jellyfish.
+
+>take fish
+The jellyfish is best left in its bowl.
+
+>remove jellyfish from bowl
+The jellyfish is best left in its bowl.
+
+>empty bowl
+fluorescent jellyfish: The jellyfish is best left in its bowl.
+
+>transfer jellyfish to ground
+The jellyfish is best left in its bowl.
+
+>show bowl to troll
+The troll looks at the goldfish bowl with interest. "Yes! Give!"
+
+>drop bowl
+Dropped.
+The troll points at the goldfish bowl and says "No just drop light. Give!"
+
+>take bowl
+Taken.
+
+>give bowl to troll
+The troll eagerly accepts the goldfish bowl and stands aside.
+!It is now pitch dark in here!
+
+>l
+Troll Lair
+A troll stands off to one side, his face bathed in the light of a goldfish bowl.
+You can also see a rock here.
+
+>e
+Darkness
+
+>turn on lamp
+You switch the lamp on.
+Maze
