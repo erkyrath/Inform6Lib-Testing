@@ -1933,3 +1933,218 @@ Verb "flip" "toss" * is_coin                     -> TossCoin;
 #END; ! test
 
 * ParserError
+
+[Welcome to a short story called "Balances", one of the example games for the
+You feel a little confused as to how you got here. Something to do with
+BALANCES
+Ramshackle Hut
+Until quite recently, someone lived here, you feel sure. Now the furniture is
+
+>asdfasdf
+!** Programming error
+That's not a verb I recognise.
+
+>drop book
+Dropped.
+
+>learn rezrov
+You haven't access to that spell, if indeed it is a spell.
+
+>cast rezrov
+You haven't learned that spell, if indeed it is a spell.
+
+>cast asdfasdf
+You haven't learned that spell, if indeed it is a spell.
+
+>read book
+My Spell Book
+gnusto
+frotz
+yomin
+rezrov
+
+>learn rezrov
+Your training is such that you can only memorise such a spell with the aid of a
+
+>cast rezrov
+You haven't got that spell committed to memory. [Type "spells" to see what you
+
+>rezrov
+You haven't got that spell committed to memory. [Type "spells" to see what you
+
+>take book
+Taken.
+
+>spells
+The gnusto spell is yours forever. Other than that, you have no spells
+
+>learn rezrov
+Using your best study habits, you commit the rezrov spell to memory.
+
+>spells
+The gnusto spell is yours forever. Other than that, you have the rezrov spell
+
+>cast rezrov
+The world is open already.
+
+>learn rezrov
+Using your best study habits, you commit the rezrov spell to memory.
+
+>cast rezrov on asdfasdf
+You can't see any such thing.
+
+>i
+!a cedarwood box
+!Helistar's grimoire
+a spell book
+a silver coin
+a magic burin
+
+>search furniture
+Searching through the furniture, which is good for nothing but firewood now,
+[Your score has just gone up by five points.]
+
+>i
+a cedarwood box (which is closed and locked)
+!Helistar's grimoire
+
+>cast asdfasdf on box
+You haven't learned that spell, if indeed it is a spell.
+
+>cast rezrov on box
+Silently, the cedarwood box swings open. In the cedarwood box is Helistar's
+
+>i
+a cedarwood box (which is open)
+Helistar's grimoire
+
+>take grimoire
+Taken.
+
+>read grimoire
+This must be the grimoire of dangerous spells kept by your irresponsible friend
+frotz
+lleps
+mortin
+
+>learn rezrov
+Using your best study habits, you commit the rezrov spell to memory.
+
+>learn lleps
+Using your best study habits, you commit the lleps spell to memory.
+
+>spells
+gnusto spell is yours forever
+lleps spell and
+rezrov spell memorised
+
+>lleps
+The spell backfires, painfully.
+
+>learn lleps
+Using your best study habits, you commit the lleps spell to memory.
+
+>lleps box
+The spell backfires, painfully.
+
+>learn lleps
+Using your best study habits, you commit the lleps spell to memory.
+
+>lleps asdfasdf
+You can't see any such thing.
+
+>lleps rezrov
+Your mind wrenches as the rezrov spell reverses itself.
+
+>spells
+gnusto spell is yours forever
+rezrov spell memorised
+
+>rezrov box
+Silently, the cedarwood box swings shut and locks.
+
+>i
+Helistar's grimoire
+a cedarwood box (which is closed and locked)
+
+>learn rezrov and frotz
+rezrov spell: Using your best study habits, you commit the rezrov spell to
+frotz spell: Using your best study habits, you commit the frotz spell to
+
+>spells
+gnusto spell is yours forever
+frotz spell and
+rezrov spell memorised
+
+>cast rezrov and frotz
+You can't use multiple objects with that verb.
+
+>rezrov and frotz
+You can't see any such thing.
+
+>cast rezrov and frotz on box
+You can't use multiple objects with that verb.
+
+>rezrov and frotz box
+You can't see any such thing.
+
+>out
+Grasslands, near Hut
+The grasslands sway over low hills in all directions: it is a peaceful
+
+>n
+Pocket Valley
+A pleasant pocket valley in the grassy hills, through which a trail runs north-
+There is a chestnut horse here, munching on a pile of oats.
+
+>i
+!a shiny scroll
+
+>search oats
+Sifting through the oats, you find a shiny scroll!  Lucky you got to it before
+[Your score has just gone up by five points.]
+
+>i
+a shiny scroll
+
+>read shiny scroll
+The scroll reads "bozbar spell: cause an animal to sprout wings".
+
+>drop shiny scroll
+Dropped.
+
+>s
+Grasslands, near Hut
+
+>copy bozbar
+You have no text of that spell to copy.
+
+>copy asdfasdf
+You haven't access to that spell, if indeed it is a spell.
+
+>n
+Pocket Valley
+There is a chestnut horse here
+You can also see a shiny scroll (of the bozbar spell) here.
+
+>take scroll
+Taken.
+
+>copy bozbar
+(to the chestnut horse)
+You can only copy spells to scrolls.
+
+>copy bozbar to spellbook
+If a burin could write in a spell book, you wouldn't need the gnusto spell!
+
+>copy rezrov to shiny
+The scroll is already full of incantation.
+
+>copy rezrov and frotz
+(to the chestnut horse)
+rezrov spell: You can only copy spells to scrolls.
+frotz spell: You can only copy spells to scrolls.
+
+>copy rezrov and frotz to shiny
+rezrov spell: The scroll is already full of incantation.
+frotz spell: The scroll is already full of incantation.
