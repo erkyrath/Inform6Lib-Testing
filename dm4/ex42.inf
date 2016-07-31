@@ -1,0 +1,123 @@
+Constant Story "Example 42";
+Constant Headline "^";
+
+Include "Parser";
+Include "VerbLib";
+
+[ Initialise;
+  @setrandom 1; ! deterministic mode
+  location = Forest;
+  move thief to Clearing;
+  StartDaemon(thief);
+];
+
+Object Forest "Forest"
+  with
+    description "You see a clearing to the east.",
+    e_to Clearing,
+  has light;
+
+Object Clearing "Clearing"
+  with
+    description "You see a forest to the west. A passage leads down to a cellar.",
+    w_to Forest,
+    d_to Cellar,
+  has light;
+
+Object Cellar "Cellar"
+  with
+    description "A door leads north.",
+    u_to Clearing,
+    n_to vault_door,
+  has light;
+
+Object vault_door "vault door"
+  with
+    name 'vault' 'door',
+    door_to [;
+      if (self in Cellar) return Vault;
+      else return Cellar;
+    ],
+    door_dir [;
+      if (self in Cellar) return n_to;
+      else return s_to;
+    ],
+    found_in Cellar Vault,
+  has scenery door openable open;
+
+Object Vault "Vault"
+  with
+    description "A door leads south.",
+    s_to vault_door,
+  has light;
+
+Object -> thief "thief"
+  with name 'thief' 'gentleman' 'mahu' 'modo',
+       each_turn "^The thief growls menacingly.",
+       daemon [ direction thief_at way exit_count exit_chosen;
+           if (random(3) ~= 1) rfalse;
+           thief_at = parent(thief);
+           objectloop (direction in compass) {
+               way = thief_at.(direction.door_dir);
+               if (way ofclass Object && way hasnt door) exit_count++;
+           }
+           if (exit_count == 0) rfalse;
+           exit_chosen = random(exit_count); exit_count = 0;
+           objectloop (direction in compass) {
+               way = thief_at.(direction.door_dir);
+               if (way ofclass Object && way hasnt door) exit_count++;
+               if (exit_count == exit_chosen) {
+                   move self to way;
+                   if (thief_at == location) "^The thief stalks away!";
+                   if (way == location) "^The thief stalks in!";
+                   rfalse;
+               }
+           }
+       ],
+  has  animate;
+
+Include "Grammar";
+
+#END; ! test
+
+* test
+# This test assumes the Glulxe deterministic RNG. It will fail for Z-code interpreters, and perhaps for Git also.
+
+> z
+Time passes.
+!thief
+> z
+> z
+> z
+> z
+The thief stalks in!
+The thief growls menacingly.
+> z
+The thief growls menacingly.
+> z
+The thief stalks away!
+> e
+Clearing
+You can see a thief here.
+The thief growls menacingly.
+> d
+Cellar
+> n
+Vault
+!thief
+> z
+!thief
+> z
+!thief
+> z
+!thief
+> z
+!thief
+> z
+!thief
+> z
+!thief
+> z
+!thief
+> z
+!thief
