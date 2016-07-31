@@ -1,0 +1,205 @@
+Constant Story "Example 43";
+Constant Headline "^";
+
+Include "Parser";
+Include "VerbLib";
+
+[ Initialise;
+  location = Gym;
+  WeightMonitor.activate();
+];
+
+Object Gym "Gym"
+  with
+    description "The air is thick with sweat and narcissism.",
+  has light;
+
+Object -> lamp "brass lantern"
+  with
+    name 'brass' 'lamp' 'lantern',
+    weight 50;
+
+Object -> sword "sword"
+  with
+    name 'sword',
+    weight 75;
+
+Object -> lawn_mower "lawn mower"
+  with
+    name 'lawn' 'mower' 'lawnmower' 'lawn-mower',
+    weight 200;
+
+Object -> feather "feather"
+  with
+    name 'feather',
+    weight 5;
+
+Object -> gluey_ball "gluey cannon ball"
+  with
+    name 'gluey' 'cannon' 'ball',
+    weight 150,
+    before [;
+        Drop: "The cannon ball is glued to your hand!";
+    ];
+
+Constant FULL_STRENGTH = 500;
+Constant HEAVINESS_THRESHOLD = 100;
+
+Object WeightMonitor
+  with players_strength,
+       warning_level 5,
+       activate [;
+           self.players_strength = FULL_STRENGTH;
+           StartDaemon(self);
+       ],
+       daemon [ warn strength item heaviest_weight heaviest_item;
+           strength = self.players_strength
+               - WeightOf(player) + HEAVINESS_THRESHOLD;
+           if (strength < 0) strength = 0;
+           if (strength > FULL_STRENGTH) strength = FULL_STRENGTH;
+           self.players_strength = strength;
+           if (strength == 0) {
+               heaviest_weight = -1;
+               objectloop(item in player)
+                   if (WeightOf(item) > heaviest_weight) {
+                       heaviest_weight = WeightOf(item);
+                       heaviest_item = item;
+                   }
+               if (heaviest_item == nothing) return;
+               print "^Exhausted with carrying so much, you decide
+                   to discard ", (the) heaviest_item, ": ";
+               <Drop heaviest_item>;
+               if (heaviest_item in player) {
+                   deadflag = true;
+                   "^Unprepared for this, you collapse.";
+               }
+               self.players_strength =
+                   self.players_strength + heaviest_weight;
+           }
+           warn = strength/100; if (warn == self.warning_level) return;
+           self.warning_level = warn;
+           switch (warn) {
+               3: "^You are feeling a little tired.";
+               2: "^Your possessions are weighing you down.";
+               1: "^Carrying so much weight is wearing you out.";
+               0: "^You're nearly exhausted enough to drop everything
+                  at an inconvenient moment.";
+           }
+       ];
+
+[ WeightOf obj t i;
+  if (obj provides weight) t = obj.weight; else t = 10;
+  objectloop (i in obj) t = t + WeightOf(i);
+  return t;
+];
+
+Include "Grammar";
+
+#END; ! test
+
+* test
+Gym
+
+>get sword
+Taken.
+
+>z
+Time passes.
+
+>get lamp
+Taken.
+
+>z
+Time passes.
+
+>z
+Time passes.
+You are feeling a little tired.
+
+>get lawn mower
+Taken.
+Carrying so much weight is wearing you out.
+
+>z
+Time passes.
+Exhausted with carrying so much, you decide to discard the lawn mower: Dropped.
+You're nearly exhausted enough to drop everything at an inconvenient moment.
+
+>z
+Time passes.
+Carrying so much weight is wearing you out.
+
+>z
+Time passes.
+
+>z
+Time passes.
+You're nearly exhausted enough to drop everything at an inconvenient moment.
+
+>z
+Time passes.
+
+>z
+Time passes.
+
+>z
+Time passes.
+Exhausted with carrying so much, you decide to discard the sword: Dropped.
+
+>z
+Time passes.
+Carrying so much weight is wearing you out.
+
+>z
+Time passes.
+
+>z
+Time passes.
+
+>z
+Time passes.
+Your possessions are weighing you down.
+
+>z
+Time passes.
+
+>z
+Time passes.
+You are feeling a little tired.
+
+>get feather
+Taken.
+
+>z
+Time passes.
+
+>z
+Time passes.
+
+>z
+Time passes.
+
+>z
+Time passes.
+
+>get cannon ball
+Taken.
+
+You are feeling a little tired.
+
+>get mower
+Taken.
+You're nearly exhausted enough to drop everything at an inconvenient moment.
+
+>z
+Time passes.
+Exhausted with carrying so much, you decide to discard the lawn mower: Dropped.
+
+>z
+Time passes.
+
+>z
+Time passes.
+Exhausted with carrying so much, you decide to discard the gluey cannon ball: The cannon ball is glued to your hand!
+Unprepared for this, you collapse.
+You have died
