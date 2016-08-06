@@ -5,8 +5,8 @@
 #   This script is in the public domain.
 #
 # This is derived from regtest.py, although it's not identical. This
-# version is Python 3 (rather than 2) and adapted to compile I6 code
-# before running tests.
+# version requires Python 3 (not compatible with Py2) and is adapted
+# to compile I6 code before running tests.
 #
 # For the original, see <http://eblong.com/zarf/plotex/regtest.html>
 
