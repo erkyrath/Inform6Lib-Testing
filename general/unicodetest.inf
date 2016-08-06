@@ -1,0 +1,147 @@
+Constant Story "UnicodeTest";
+Constant Headline "^Not a game.^";
+
+Release 3;
+
+! Unit test for the @streamunichar opcode.
+
+Include "Parser";
+Include "VerbLib";
+
+[ Initialise;
+  location = Kitchen;
+];
+
+Object Kitchen "Unicode Room"
+  with
+	description "This is a polyglot room.",
+  has light;
+
+Class Sign
+  with
+	name 'sign' 'signs//p',
+  has static;
+  
+Sign latin1 "latin-1 sign" Kitchen
+  with
+	name 'latin' 'latin-1',
+	description [;
+		print "AEIOU with umlauts: @:A@:E@:I@:O@:U^";
+		print "aeiou with umlauts: ";
+		@streamunichar $E4;
+		@streamunichar $EB;
+		@streamunichar $EF;
+		@streamunichar $F6;
+		@streamunichar $FC;
+		print "^";
+	];
+
+Sign atsign "at sign" Kitchen
+  with
+	name 'at' '@{40}//',
+	description [;
+		print "At signs: @@64 @{40} @{0040}^";
+	];
+	
+Sign greek "greek sign" Kitchen
+  with
+	name 'greek',
+	description [;
+		print "Greek: @{3B1}@{3B2}@{3B3}@{3B4}@{3B5} (abgde)^";
+	];
+  
+Sign hebrew "hebrew sign" Kitchen
+  with
+	name 'hebrew',
+	description [;
+		print "Hebrew: @{5D0}@{5D1}@{5D2}@{5D3}@{5DE} (abgdm... the aleph should be on the right)^";
+	];
+  
+Sign punctuation "punctuation sign" Kitchen
+  with
+	name 'punctuation' 'punc' 'punct',
+	description [;
+		print "Punctuation: @{2018}single curly quotes@{2019} @{201C}double curly quotes@{201D}^";
+	];
+  
+Sign ligature "ligature sign" Kitchen
+  with
+	name 'ligature' 'ligatures',
+	description [;
+		print "Ligatures: @{E6} (ae) @{153} (oe) @{14B} (nj) @{FB00} (ff) @{FB01} (fi) @{FB03} (ffi) @{FB04} (ffl)^";
+	];
+  
+Sign hirigana "hirigana sign" Kitchen
+  with
+	name 'hirigana',
+	description [;
+		print "Hirigana: @{304A}@{3059}@{3082} (O SU MO)^";
+	];
+  
+Sign katakana "katakana sign" Kitchen
+  with
+	name 'katakana',
+	description [;
+		print "Katakana: @{30AA}@{30B9}@{30E2} (O SU MO)^";
+	];
+
+Sign emoji "emoji sign" Kitchen
+  with
+	name 'emoji',
+	description [;
+		print "Emoji: ";
+		@streamunichar $1F600;
+		print "@{1F680}@{1F6B2}";
+		@streamunichar $1F344;
+		print " (GRINNING FACE, ROCKET, BICYCLE, MUSHROOM)^";
+	];
+
+Sign bigsign "big sign" Kitchen
+  with
+	name 'big',
+	description [;
+		print "This is all the signs in sequence:^^";
+		<Examine latin1>;
+		<Examine atsign>;
+		<Examine greek>;
+		<Examine hebrew>;
+		<Examine punctuation>;
+		<Examine ligature>;
+		<Examine hirigana>;
+		<Examine katakana>;
+		<Examine emoji>;
+	];
+	  
+Include "Grammar";
+
+#end; ! test
+
+* test
+
+>x latin-1
+AEIOU with umlauts: ÄËÏÖÜ
+aeiou with umlauts: äëïöü
+
+>x at sign
+At signs: @ @ @
+
+>x greek
+Greek: αβγδε (abgde)
+
+>x hebrew
+Hebrew: אבגדמ (abgdm... the aleph should be on the right)
+
+>x punctuation
+Punctuation: ‘single curly quotes’ “double curly quotes”
+
+>x ligatures
+Ligatures: æ (ae) œ (oe) ŋ (nj) ﬀ (ff) ﬁ (fi) ﬃ (ffi) ﬄ (ffl)
+
+>x hirigana
+Hirigana: おすも (O SU MO)
+
+>x katakana
+Katakana: オスモ (O SU MO)
+
+>x emoji
+Emoji: 😀🚀🚲🍄 (GRINNING FACE, ROCKET, BICYCLE, MUSHROOM)
