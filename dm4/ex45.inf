@@ -1,0 +1,120 @@
+Constant Story "Example 46";
+Constant Headline "^";
+
+Include "Parser";
+Include "VerbLib";
+
+[ Initialise;
+  location = Kitchen;
+  StartDaemon(tiny_claws);
+];
+
+Object Kitchen "Kitchen"
+  with
+    description "This is the kitchen. A dark basement is below.",
+    d_to Basement,
+  has light;
+
+Object Basement "Basement"
+  with
+    description "You can't read this because it is dark.",
+    u_to Kitchen,
+  has ~light;
+
+Object tiny_claws "sound of tiny claws"
+  with article "the",
+       name 'tiny' 'claws' 'sound' 'of' 'scuttling' 'scuttle'
+            'things' 'creatures' 'monsters' 'insects',
+       initial "Somewhere, tiny claws are scuttling.",
+       before [;
+           Listen: "How intelligent they sound, for mere insects.";
+           Touch, Taste: "You wouldn't want to. Really.";
+           Smell: "You can only smell your own fear.";
+           Attack: "They easily evade your flailing about.";
+           default: "The creatures evade you, chittering.";
+       ],
+       turns_active,
+       daemon [;
+           if (location ~= thedark) {
+               self.turns_active = 0; rtrue;
+           }
+           switch ((self.turns_active)++) {
+               1: "^The scuttling draws a little nearer, and your
+                  breathing grows loud and hoarse.";
+               2: "^The perspiration of terror runs off your brow.
+                  The creatures are almost here!";
+               3: "^You feel a tickling at your extremities and kick
+                  outward, shaking something chitinous off. Their
+                  sound alone is a menacing rasp.";
+               4: deadflag = true;
+                  "^Suddenly there is a tiny pain, of a
+                  hypodermic-sharp fang at your calf. Almost at once
+                  your limbs go into spasm, your shoulders and
+                  knee-joints lock, your tongue swells...";
+           }
+       ];
+
+Include "Grammar";
+
+#END; ! test
+
+* test
+Kitchen
+
+>look
+Kitchen
+!claws
+
+>x claws
+You can't see any such thing.
+
+>down
+Darkness
+Somewhere, tiny claws are scuttling.
+
+>x claws
+The creatures evade you, chittering.
+The scuttling draws a little nearer, and your breathing grows loud and hoarse.
+
+>touch creatures
+You wouldn't want to. Really.
+The perspiration of terror runs off your brow. The creatures are almost here!
+
+>up
+Kitchen
+!claws
+!pain
+
+>x claws
+You can't see any such thing.
+
+>down
+Darkness
+Somewhere, tiny claws are scuttling.
+
+>up
+Kitchen
+!claws
+
+>down
+Darkness
+Somewhere, tiny claws are scuttling.
+
+>z
+The scuttling draws a little nearer
+
+>get creatures
+The creatures evade you, chittering.
+The creatures are almost here!
+
+>look
+Darkness
+Somewhere, tiny claws are scuttling.
+You feel a tickling at your extremities
+
+>fight creatures
+They easily evade your flailing about.
+Suddenly there is a tiny pain, of a hypodermic-sharp fang at your calf.
+You have died
+
+
