@@ -22,10 +22,10 @@ Object Basement "Basement"
   has ~light;
 
 [ LookRoutine;
-	if (location == thedark) {
-		move tiny_claws to location;
-		print "^Somewhere, tiny claws are scuttling.^";
-	}
+    if (location == thedark) {
+        move tiny_claws to location;
+        print "^Somewhere, tiny claws are scuttling.^";
+    }
 ];
 
 Object tiny_claws "sound of tiny claws"
