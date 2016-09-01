@@ -1,4 +1,4 @@
-Constant Story "Example 46";
+Constant Story "Example 45";
 Constant Headline "^";
 
 Include "Parser";
@@ -21,11 +21,17 @@ Object Basement "Basement"
     u_to Kitchen,
   has ~light;
 
+[ LookRoutine;
+	if (location == thedark) {
+		move tiny_claws to location;
+		print "^Somewhere, tiny claws are scuttling.^";
+	}
+];
+
 Object tiny_claws "sound of tiny claws"
   with article "the",
        name 'tiny' 'claws' 'sound' 'of' 'scuttling' 'scuttle'
             'things' 'creatures' 'monsters' 'insects',
-       initial "Somewhere, tiny claws are scuttling.",
        before [;
            Listen: "How intelligent they sound, for mere insects.";
            Touch, Taste: "You wouldn't want to. Really.";
@@ -52,7 +58,8 @@ Object tiny_claws "sound of tiny claws"
                   your limbs go into spasm, your shoulders and
                   knee-joints lock, your tongue swells...";
            }
-       ];
+       ]
+  has scenery;
 
 Include "Grammar";
 
