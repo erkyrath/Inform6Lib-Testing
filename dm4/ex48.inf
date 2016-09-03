@@ -1,0 +1,246 @@
+Constant Story "Example 48";
+Constant Headline "^";
+
+Statusline time;
+
+Include "Parser";
+Include "VerbLib";
+
+Constant SUNRISE = 360;  ! i.e., 6 am
+Constant SUNSET = 1140;  ! i.e., 7 pm
+Class OutdoorLocation;
+
+[ Initialise;
+  location = Kitchen;
+  SetTime(700, 1);
+  StartDaemon(Sun);
+];
+
+[ PrintTime hour min;
+    hour = the_time / 60;
+    min = the_time % 60;
+    if (hour == 0)
+        hour = 12;
+    else if (hour > 12)
+        hour = hour - 12;
+    print hour, ":";
+    if (min < 10)
+        print "0";
+    print min;
+    if (the_time < 720)
+        print " am";
+    else
+        print " pm";
+];
+
+Object Kitchen "Kitchen"
+  with
+    description "This is the kitchen. The yard is north.",
+    n_to Yard,
+  has light;
+
+Object -> clock "clock"
+  with
+    name 'clock',
+    initial [;
+        print "A clock on the wall reads ";
+        PrintTime();
+        ".";
+    ],
+    description [;
+        print "The clock reads ";
+        PrintTime();
+        ".";
+    ],
+  has static;
+
+Object -> dial "dial"
+  with
+    name 'dial',
+    initial "A time-changing dial sits on the counter.",
+    before [ val;
+        SetTo:
+            val = second % 24;
+            SetTime(val*60+55, 1);
+            print "You click the dial around. The clock now reads ";
+            PrintTime();
+            ".";
+    ],
+  has static;
+
+OutdoorLocation Yard "Yard"
+  with
+    description "This is the yard. The kitchen is south.",
+    s_to Kitchen,
+  has ~light;
+
+Object Sun "sun"
+  with name 'sun',
+       found_in [;
+           ! In the DM4, this tests real_location rather than location.
+           ! However, that doesn't work, as real_location has not yet been
+           ! set at MoveFloatingObjects time.
+           if (location ofclass OutdoorLocation) rtrue;
+       ],
+       description "The sun is bright!",
+       before [;
+           Examine: ;
+           default: "The sun is too far away.";
+       ],
+       daemon [;
+           if (the_time >= SUNRISE && the_time < SUNSET) {
+               if (self has absent) {
+                   give self ~absent;
+                   if (real_location ofclass OutdoorLocation) {
+                       move self to real_location;
+                       "^The sun rises, illuminating the landscape!";
+                   }
+               }
+           } else {
+               if (self hasnt absent) {
+                   give self absent; remove self;
+                   if (real_location ofclass OutdoorLocation)
+                       "^As the sun sets, the landscape is plunged
+                       into darkness.";
+               }
+           }
+       ],
+  has  light scenery;
+
+Include "Grammar";
+
+Extend 'set' replace
+    * noun 'to' number -> SetTo;
+
+#END; ! test
+
+* outdoors
+Kitchen
+A clock on the wall reads 11:40 am.
+
+>verbose
+
+>north
+Yard
+This is the yard.
+
+>x sun
+The sun is bright!
+
+>south
+Kitchen
+
+>set dial to 5
+The clock now reads 5:55 am.
+
+>n
+Darkness
+It is pitch dark, and you can't see a thing.
+
+>x sun
+You can't see any such thing.
+
+>z
+
+>z
+
+>z
+The sun rises, illuminating the landscape!
+
+Yard
+This is the yard. The kitchen is south.
+
+>x sun
+The sun is bright!
+
+>s
+Kitchen
+
+>n
+Yard
+
+>s
+Kitchen
+
+>set dial to 18
+The clock now reads 6:55 pm.
+
+>n
+Yard
+
+>x sun
+The sun is bright!
+
+>z
+
+>z
+As the sun sets, the landscape is plunged into darkness.
+It is now pitch dark in here!
+
+>l
+Darkness
+It is pitch dark, and you can't see a thing.
+
+>x sun
+You can't see any such thing.
+
+>s
+Kitchen
+
+>n
+Darkness
+
+
+* indoors
+>verbose
+
+>n
+Yard
+This is the yard. The kitchen is south.
+
+>s
+Kitchen
+
+>set dial to 18
+The clock now reads 6:55 pm.
+
+>z
+!sun
+>z
+!sun
+>z
+!sun
+>z
+!sun
+>z
+!sun
+
+>n
+Darkness
+It is pitch dark, and you can't see a thing.
+
+>s
+Kitchen
+
+>set dial to 5
+The clock now reads 5:55 am.
+
+>z
+!sun
+>z
+!sun
+>z
+!sun
+>z
+!sun
+>z
+!sun
+
+>n
+Yard
+
+>x sun
+The sun is bright!
+
+>s
+Kitchen
