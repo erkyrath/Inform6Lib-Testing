@@ -18,30 +18,30 @@ Object Kitchen "Kitchen"
 
 Object -> calendar "calendar"
   with
-  	name 'calendar',
-  	dayofweek 1,
-  	initial [;
-  		print "A calendar on the wall says that it is ";
-  		switch (self.dayofweek) {
-  			1: print "Monday";
-  			2: print "Tuesday";
-  			3: print "Wednesday";
-  			4: print "Thursday";
-  			5: print "Friday";
-  			6: print "Saturday";
-  			7: print "Sunday";
-  		}
-  		".";
-  	],
+    name 'calendar',
+    dayofweek 1,
+    initial [;
+        print "A calendar on the wall says that it is ";
+        switch (self.dayofweek) {
+            1: print "Monday";
+            2: print "Tuesday";
+            3: print "Wednesday";
+            4: print "Thursday";
+            5: print "Friday";
+            6: print "Saturday";
+            7: print "Sunday";
+        }
+        ".";
+    ],
   has static;
 
 [ TimePasses;
-	if (the_time == 0) {
-		print "^Midnight! The calendar flips over.^";
-		calendar.dayofweek++;
-		if (calendar.dayofweek == 8)
-			calendar.dayofweek = 1;
-	}
+    if (the_time == 0) {
+        print "^Midnight! The calendar flips over.^";
+        calendar.dayofweek++;
+        if (calendar.dayofweek == 8)
+            calendar.dayofweek = 1;
+    }
 ];
 
 Include "Grammar";
