@@ -1,5 +1,7 @@
-Constant Story "Example 40-2";
+Constant Story "Example 40b";
 Constant Headline "^";
+
+! In this version of the exercise, we make the player emit light.
 
 Include "Parser";
 Include "VerbLib";

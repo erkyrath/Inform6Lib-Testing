@@ -1,5 +1,7 @@
-Constant Story "Example 40-1";
+Constant Story "Example 40a";
 Constant Headline "^";
+
+! In this version of the exercise, we create a floating sun object.
 
 Include "Parser";
 Include "VerbLib";
