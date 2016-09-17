@@ -1,0 +1,247 @@
+Constant Story "Example 50";
+Constant Headline "^";
+
+Statusline time;
+
+Include "Parser";
+Include "VerbLib";
+
+! The game takes place in July.
+Global dayofmonth = 1;
+
+! How many minutes did this turn take?
+Global turntime = 1;
+
+[ Initialise;
+  player.orders = ordersholder.orders;
+  move ball to player;
+  location = Camp;
+  SetTime(540);
+  ! We do not pass a second argument to SetTime because we are going to
+  ! handle time advancement ourselves.
+];
+
+Object ordersholder
+  with
+    description "This is a placeholder object for player action overrides.",
+    orders [;
+        Wait:
+            turntime = 10;
+            "You spend ten idle minutes.";
+    ];
+
+Object ball "ball"
+  with
+    name 'ball';
+
+Object Camp "Camp"
+  with
+    description "This is an archaeological camp in the desert. The dig is to the south.",
+    s_to [;
+        turntime = 30;
+        print "You hike to the dig site.^";
+        return Dig;
+    ],
+  has light;
+
+Object -> paperwork "paperwork"
+  with
+    name 'paper' 'papers' 'paperwork',
+    initial "Your paperwork has piled up alarmingly.",
+    before [;
+        Search:
+            turntime = 24*60; ! one day
+            "You spend a whole day trying to find that stupid form.";
+        Rub, Dig:
+            turntime = 7*24*60; ! seven days
+            "You attack the paperwork. There goes your week.";
+    ],
+  has static;
+
+Object Dig "Dig"
+  with
+    description "You are at the dig site. Camp is back north.",
+    n_to [;
+        turntime = 30;
+        print "You hike back to camp.^";
+        return Camp;
+    ],
+  has light;
+
+Object -> hole "hole"
+  with
+    name 'large' 'hole' 'sand',
+    initial "A large hole has been dug out of the sand. It's not finished.",
+    before [;
+        Dig:
+            turntime = 3*60; ! three hours
+            "You spend a pleasant few hours working the hole.";
+    ],
+  has static;
+
+[ TimePasses origday;
+    origday = dayofmonth;
+    
+    the_time = the_time + turntime;
+    while (the_time >= 1440) {
+        the_time = the_time - 1440;
+        dayofmonth++;
+    }
+    
+    if (dayofmonth > 31) {
+        print "July is over, and your grant has run out.^";
+        deadflag = 1;
+        rtrue;
+    }
+    
+    if (origday ~= dayofmonth)
+        print "It is now July ", dayofmonth, "!^";
+        
+    turntime = 1;
+];
+
+Include "Grammar";
+
+[ PrintTime time   hour min;
+    hour = time / 60;
+    min = time % 60;
+    if (hour == 0)
+        hour = 12;
+    else if (hour > 12)
+        hour = hour - 12;
+    print hour, ":";
+    if (min < 10)
+        print "0";
+    print min;
+    if (time < 720)
+        print " am";
+    else
+        print " pm";
+];
+
+[ DateSub;
+    print_ret "It is ", (PrintTime) the_time, ", July ", dayofmonth, ".";
+];
+
+Verb meta 'date' 'time'
+    * -> Date;
+
+#END; ! test
+
+* test
+
+Camp
+
+> date
+It is 9:00 am, July 1.
+
+> date
+It is 9:00 am, July 1.
+
+> drop ball
+Dropped.
+
+> get ball
+Taken.
+
+> date
+It is 9:02 am, July 1.
+
+> south
+You hike to the dig site.
+Dig
+
+> date
+It is 9:32 am, July 1.
+
+> dig hole
+You spend a pleasant few hours working the hole.
+
+> date
+It is 12:32 pm, July 1.
+
+> dig hole
+You spend a pleasant few hours working the hole.
+
+> date
+It is 3:32 pm, July 1.
+
+> north
+You hike back to camp.
+Camp
+
+> date
+It is 4:02 pm, July 1.
+
+> search papers
+You spend a whole day trying to find that stupid form.
+It is now July 2!
+
+> date
+It is 4:02 pm, July 2.
+
+> dig paperwork
+You attack the paperwork. There goes your week.
+It is now July 9!
+
+> date
+It is 4:02 pm, July 9.
+
+> dig paperwork
+You attack the paperwork. There goes your week.
+It is now July 16!
+
+> date
+It is 4:02 pm, July 16.
+
+> dig paperwork
+You attack the paperwork. There goes your week.
+It is now July 23!
+
+> jump
+You jump on the spot, fruitlessly.
+
+> date
+It is 4:03 pm, July 23.
+
+> south
+You hike to the dig site.
+Dig
+
+> date
+It is 4:33 pm, July 23.
+
+> dig hole
+You spend a pleasant few hours working the hole.
+
+> dig hole
+You spend a pleasant few hours working the hole.
+
+> date
+It is 10:33 pm, July 23.
+
+> dig hole
+You spend a pleasant few hours working the hole.
+It is now July 24!
+
+> dig hole
+You spend a pleasant few hours working the hole.
+
+> date
+It is 4:33 am, July 24.
+
+> north
+You hike back to camp.
+Camp
+
+> date
+It is 5:03 am, July 24.
+
+> search papers
+You spend a whole day trying to find that stupid form.
+It is now July 25!
+
+> clean papers
+You attack the paperwork. There goes your week.
+July is over, and your grant has run out.
+You have died
