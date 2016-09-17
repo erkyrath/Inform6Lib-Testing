@@ -1,0 +1,80 @@
+Constant Story "Example 49a";
+Constant Headline "^";
+
+! In this version of the example, we demonstrate that trapping the Drop
+! action isn't a very good solution. A summoned apple remains in the room
+! instead of disappearing.
+
+Include "Parser";
+Include "VerbLib";
+
+[ Initialise;
+    location = Midair;
+    move rock to player;
+    move wand to player;
+];
+
+Object Midair "In Mid-Air"
+  with
+    description "You float. There is no floor.",
+    before [;
+        Drop:
+            remove noun;
+            print_ret (The) noun, " falls out of sight.";
+    ],
+  has light;
+
+Object rock "rock"
+  with
+    name 'rock';
+
+Object wand "wand"
+  with
+    name 'wand',
+    description "It's a wand of apple-summoning.",
+    before [;
+        Wave:
+            if (parent(apple))
+                "There is already an apple.";
+            move apple to location;
+            "An apple appears before you!";
+    ];
+
+Object apple "apple"
+  with
+    name 'apple';
+
+Include "Grammar";
+
+#END; ! test
+
+* test
+
+In Mid-Air
+
+> drop rock
+The rock falls out of sight.
+
+> look
+!rock
+
+> get rock
+You can't see any such thing.
+
+> wave wand
+An apple appears before you!
+# But it fails to disappear in this test.
+
+> look
+!rock
+apple
+
+> get apple
+Taken.
+
+> drop apple
+The apple falls out of sight.
+
+> look
+!apple
+

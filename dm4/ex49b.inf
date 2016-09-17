@@ -1,0 +1,113 @@
+Constant Story "Example 49b";
+Constant Headline "^";
+
+! In this version of the example, we demonstrate that a daemon is a better
+! solution, but still imperfect because the fatigue daemon runs after the
+! midair daemon.
+
+Include "Parser";
+Include "VerbLib";
+
+[ Initialise;
+    location = Midair;
+    move rock to player;
+    move wand to player;
+    StartDaemon(Midair);
+];
+
+Object Midair "In Mid-Air"
+  with
+    description "You float. There is no floor.",
+    daemon [ obj nextobj;
+        for (obj = child(location); obj; obj = nextobj) {
+            nextobj = sibling(obj);
+            if (obj ~= player) {
+                remove obj;
+                print (The) obj, " falls out of sight.^";
+            }
+        }
+    ],
+    before [;
+        Jump:
+            StartDaemon(fatigue);
+            "You can't really jump, but your flailing motions exhaust you.";
+    ],
+  has light;
+
+Object rock "rock"
+  with
+    name 'rock';
+
+Object wand "wand"
+  with
+    name 'wand',
+    description "It's a wand of apple-summoning.",
+    before [;
+        Wave:
+            if (parent(apple))
+                "There is already an apple.";
+            move apple to location;
+            "An apple appears before you!";
+    ];
+
+Object apple "apple"
+  with
+    name 'apple';
+
+Object fatigue
+  with
+    description "This is a placeholder object for the fatigue daemon.",
+    daemon [ obj;
+        while (child(player)) {
+            obj = child(player);
+            move obj to location;
+            print (The) obj, " slips through your numb fingers.^";
+        }
+    ];
+
+Include "Grammar";
+
+#END; ! test
+
+* test
+
+In Mid-Air
+
+> drop rock
+The rock falls out of sight.
+
+> look
+!rock
+
+> get rock
+You can't see any such thing.
+
+> wave wand
+An apple appears before you!
+The apple falls out of sight.
+
+> look
+!rock
+!apple
+
+> jump
+You can't really jump, but your flailing motions exhaust you.
+The wand slips through your numb fingers.
+# But it fails to disappear in this test (until next turn).
+
+> look
+You can see a wand here.
+The wand falls out of sight.
+
+> look
+!wand
+
+* dropall
+
+In Mid-Air
+
+> drop all
+wand: Dropped.
+rock: Dropped.
+The rock falls out of sight.
+The wand falls out of sight.
