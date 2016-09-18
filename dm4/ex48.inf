@@ -1,8 +1,6 @@
 Constant Story "Example 48";
 Constant Headline "^";
 
-Statusline time;
-
 Include "Parser";
 Include "VerbLib";
 
