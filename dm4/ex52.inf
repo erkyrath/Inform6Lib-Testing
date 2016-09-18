@@ -14,14 +14,14 @@ Object ordersholder
   with
     description "This is a placeholder object for player action overrides.",
     orders [;
-		if (gasmask hasnt worn) rfalse;
-		if (actor == self && action ~= ##Answer or ##Tell or ##Ask) rfalse;
-		"Your speech is muffled into silence by the gas mask.";
+        if (gasmask hasnt worn) rfalse;
+        if (actor == self && action ~= ##Answer or ##Tell or ##Ask) rfalse;
+        "Your speech is muffled into silence by the gas mask.";
     ];
 
 Object gasmask "gas mask"
   with
-  	name 'gas' 'mask' 'gasmask',
+    name 'gas' 'mask' 'gasmask',
   has clothing;
 
 Object Trench "Trench"
@@ -31,7 +31,7 @@ Object Trench "Trench"
 
 Object -> mud "mud"
   with
-  	name 'mud',
+    name 'mud',
   has scenery;
 
 Object -> Helena "Helena"
@@ -39,10 +39,10 @@ Object -> Helena "Helena"
     name 'helena' 'sergeant' 'sarge',
     initial "Sergeant Helena stands by your side.",
     life [;
-    	Answer:
-    		"Helena nods solemnly.";
-    	Ask, Tell:
-    		"Helena shrugs.";
+        Answer:
+            "Helena nods solemnly.";
+        Ask, Tell:
+            "Helena shrugs.";
     ],
     orders [;
         Jump:
