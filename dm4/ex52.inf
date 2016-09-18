@@ -1,0 +1,96 @@
+Constant Story "Example 52";
+Constant Headline "^";
+
+Include "Parser";
+Include "VerbLib";
+
+[ Initialise;
+  player.orders = ordersholder.orders;
+  location = Trench;
+  move gasmask to player;
+];
+
+Object ordersholder
+  with
+    description "This is a placeholder object for player action overrides.",
+    orders [;
+		if (gasmask hasnt worn) rfalse;
+		if (actor == self && action ~= ##Answer or ##Tell or ##Ask) rfalse;
+		"Your speech is muffled into silence by the gas mask.";
+    ];
+
+Object gasmask "gas mask"
+  with
+  	name 'gas' 'mask' 'gasmask',
+  has clothing;
+
+Object Trench "Trench"
+  with
+    description "The trenches are all mud.",
+  has light;
+
+Object -> mud "mud"
+  with
+  	name 'mud',
+  has scenery;
+
+Object -> Helena "Helena"
+  with
+    name 'helena' 'sergeant' 'sarge',
+    initial "Sergeant Helena stands by your side.",
+    life [;
+    	Answer:
+    		"Helena nods solemnly.";
+    	Ask, Tell:
+    		"Helena shrugs.";
+    ],
+    orders [;
+        Jump:
+            "Helena performs jumping jacks. (It's not that she obeys your every command. Jumping jacks are just her favorite exercise.)";
+    ],
+  has proper static animate;
+
+Include "Grammar";
+
+#END; ! test
+
+* test
+
+Trench
+
+> ask helena about mud
+Helena shrugs.
+
+> tell helena about mud
+Helena shrugs.
+
+> say war is hell to helena
+Helena nods solemnly.
+
+> helena, jump
+Helena performs jumping jacks.
+
+> wear mask
+You put on the gas mask.
+
+> jump
+You jump on the spot, fruitlessly.
+
+> ask helena about mud
+Your speech is muffled into silence by the gas mask.
+
+> tell helena about mud
+Your speech is muffled into silence by the gas mask.
+
+> say war is hell to helena
+Your speech is muffled into silence by the gas mask.
+
+> helena, jump
+Your speech is muffled into silence by the gas mask.
+
+> remove mask
+You take off the gas mask.
+
+> ask helena about mud
+Helena shrugs.
+
