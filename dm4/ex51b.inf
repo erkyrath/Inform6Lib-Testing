@@ -1,0 +1,166 @@
+Constant Story "Example 51b";
+Constant Headline "^";
+
+! In this version of the example, we follow the manual's recommendation and
+! use a player.orders rule.
+
+Include "Parser";
+Include "VerbLib";
+
+[ Initialise;
+    location = Ship;
+];
+
+[ MyNewRule;
+  if (actor ~= player) rfalse;
+  Listen: "Your hearing is still weak from all that cannon-fire.";
+  default: rfalse;
+];
+
+Object Ship "Pirate Ship"
+  with
+    description "You stand on the deck of the trusty Black Bart.",
+    before [;
+        Listen:
+            if (~~noun)
+                "You hear the creak of the lines, the smash of the waves.";
+        WaveHands:
+            if (~~parent(cuckoo)) {
+                move cuckoo to Ship;
+                "Your cuckoo flutters down out of the rigging and settles on your shoulder.";
+            }
+    ],
+  has light;
+
+Object -> cannon "cannon"
+  with
+    name 'cannon' 'gun' 'button',
+    initial "Your ship's trusty cannon rests by the rail. Anachronistically, it is fired by pushing a button.",
+    before [;
+        Listen:
+            "The cannon makes anachronistic whirring noises. Where did you find this thing, anyway?";
+        Push:
+            player.orders = MyNewRule;
+            "Kaboom! Fire erupts over the seas! Your ears hurt now.";
+    ],
+  has static;
+
+Object -> Helena "Helena"
+  with
+    name 'helena' 'mate' 'pirate',
+    initial "Helena, your trusty first mate, stands by your side.",
+    before [;
+        Listen:
+            "Helena is humming a Gilbert and Sullivan tune.";
+    ],
+    orders [;
+        Listen:
+            "Helena cups her hand to her ear and listens intently.";
+        Jump:
+            "Helena performs jumping jacks. (It's not that she obeys your every command. Jumping jacks are just her favorite exercise.)";
+    ],
+  has proper static animate;
+
+Object cuckoo "cuckoo"
+  with
+    name 'cuckoo' 'bird',
+    initial "On your shoulder is your trusty pet cuckoo.",
+    description "Parrots have been banned on this ship ever since the Aunt Mildred incident.",
+    react_before [;
+        Listen:
+            "The cuckoo's ugly squawk drowns everything out.";
+    ],
+  has static;
+
+Include "Grammar";
+
+#END; ! test
+
+* test
+
+Pirate Ship
+
+> listen
+You hear the creak of the lines, the smash of the waves.
+
+> listen to gun
+The cannon makes anachronistic whirring noises.
+
+> listen to helena
+Helena is humming a Gilbert and Sullivan tune.
+
+> helena, jump
+Helena performs jumping jacks.
+
+> helena, listen
+Helena cups her hand to her ear and listens intently.
+
+> helena, sing
+Helena has better things to do.
+
+> push button
+Kaboom! Fire erupts over the seas! Your ears hurt now.
+
+> listen
+Your hearing is still weak from all that cannon-fire.
+
+> listen to gun
+Your hearing is still weak from all that cannon-fire.
+
+> listen to helena
+Your hearing is still weak from all that cannon-fire.
+
+> helena, jump
+Helena performs jumping jacks.
+
+> helena, listen
+Helena cups her hand to her ear and listens intently.
+
+> helena, sing
+Helena has better things to do.
+
+* cuckoo
+
+Pirate Ship
+
+> wave
+Your cuckoo flutters down out of the rigging and settles on your shoulder.
+
+> listen
+The cuckoo's ugly squawk drowns everything out.
+
+> listen to gun
+The cuckoo's ugly squawk drowns everything out.
+
+> listen to helena
+The cuckoo's ugly squawk drowns everything out.
+
+> helena, jump
+Helena performs jumping jacks.
+
+> helena, listen
+Helena cups her hand to her ear and listens intently.
+
+> helena, sing
+Helena has better things to do.
+
+> push button
+Kaboom! Fire erupts over the seas! Your ears hurt now.
+
+> listen
+Your hearing is still weak from all that cannon-fire.
+
+> listen to gun
+Your hearing is still weak from all that cannon-fire.
+
+> listen to helena
+Your hearing is still weak from all that cannon-fire.
+
+> helena, jump
+Helena performs jumping jacks.
+
+> helena, listen
+Helena cups her hand to her ear and listens intently.
+
+> helena, sing
+Helena has better things to do.
