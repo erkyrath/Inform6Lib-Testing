@@ -19,7 +19,7 @@ Object Midair "In Mid-Air"
   with
     description "You float. There is no floor.",
     daemon [ obj nextobj;
-        for (obj = child(location); obj; obj = nextobj) {
+        for (obj = child(location) : obj : obj = nextobj) {
             nextobj = sibling(obj);
             if (obj ~= player) {
                 remove obj;
