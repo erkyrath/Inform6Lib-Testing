@@ -5,6 +5,10 @@ Release 3;
 
 ! Unit test for the @streamunichar opcode.
 
+#ifndef TARGET_GLULX;
+Message fatalerror "This test can only be compiled for Glulx.";
+#endif; ! TARGET_GLULX
+
 Include "Parser";
 Include "VerbLib";
 
