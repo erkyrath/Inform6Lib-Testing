@@ -116,6 +116,8 @@ class Command:
                     pass
             if self.cmd is None:
                 raise Exception('Unable to interpret char "%s"' % (cmd,))
+        elif self.type == 'timer':
+            self.cmd = None
         elif self.type == 'include':
             self.cmd = cmd
         elif self.type == 'fileref_prompt':
@@ -311,6 +313,7 @@ class GameStateRemGlk(GameState):
         import json
         update = { 'type':'init', 'gen':0,
                    'metrics': { 'width':80, 'height':40 },
+                   'support': [ 'timer' ],
                    }
         cmd = json.dumps(update)
         self.infile.write((cmd+'\n').encode())
@@ -339,6 +342,8 @@ class GameStateRemGlk(GameState):
             update = { 'type':'char', 'gen':self.generation,
                        'window':self.charinputwin, 'value':val
                        }
+        elif cmd.type == 'timer':
+            update = { 'type':'timer', 'gen':self.generation }
         elif cmd.type == 'fileref_prompt':
             if self.specialinput != 'fileref_prompt':
                 raise Exception('Game is not expecting a fileref_prompt')
