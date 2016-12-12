@@ -66,7 +66,7 @@ popt.add_option('--vital',
                 action='store_true', dest='vital',
                 help='abort a test on the first error')
 popt.add_option('-v', '--verbose',
-                action='store_true', dest='verbose',
+                action='count', dest='verbose', default=0,
                 help='display the transcripts as they run')
 
 (opts, args) = popt.parse_args()
@@ -416,6 +416,10 @@ class GameStateRemGlk(GameState):
                        }
         else:
             raise Exception('Rem mode does not recognize command type: %s' % (cmd.type))
+        if opts.verbose >= 2:
+            import pprint
+            pprint.pprint(update, compact=True, indent=1)
+            print()
         cmd = json.dumps(update)
         self.infile.write((cmd+'\n').encode())
         self.infile.flush()
@@ -457,6 +461,11 @@ class GameStateRemGlk(GameState):
         # Parse the update object. This is complicated. For the format,
         # see http://eblong.com/zarf/glk/glkote/docs.html
 
+        if opts.verbose >= 2:
+            import pprint
+            pprint.pprint(update, compact=True, indent=1)
+            print()
+
         self.generation = update.get('gen')
 
         windows = update.get('windows')
@@ -495,7 +504,7 @@ class GameStateRemGlk(GameState):
                     if text:
                         for line in text:
                             dat = self.extract_text(line)
-                            if (opts.verbose):
+                            if (opts.verbose == 1):
                                 if (dat != '>'):
                                     print(dat)
                             if line.get('append') and len(self.storywin):
