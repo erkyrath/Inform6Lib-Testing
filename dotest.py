@@ -170,6 +170,7 @@ class Check:
     method to examine a list of lines, and return None (on success) or a
     string (explaining the failure).
     """
+    inrawdata = False
     inverse = False
     instatus = False
 
@@ -188,13 +189,25 @@ class Check:
         if len(val) > 32:
             val = val[:32] + '...'
         invflag = '!' if self.inverse else ''
-        return '<%s %s"%s">' % (self.__class__.__name__, invflag, val,)
+        if self.instatus:
+            invflag += '{status}'
+        detail = self.reprdetail()
+        return '<%s %s%s"%s">' % (self.__class__.__name__, detail, invflag, val,)
+
+    def reprdetail(self):
+        return ''
 
     def eval(self, state):
-        if self.instatus:
-            lines = state.statuswin
+        if not self.inrawdata:
+            if self.instatus:
+                lines = state.statuswin
+            else:
+                lines = state.storywin
         else:
-            lines = state.storywin
+            if self.instatus:
+                lines = state.statuswindat
+            else:
+                lines = state.storywindat
         res = self.subeval(lines)
         if (not self.inverse):
             return res
@@ -244,6 +257,8 @@ class LiteralCountCheck(Check):
             res = LiteralCountCheck(ln, **args)
             res.count = int(match.group(1))
             return res
+    def reprdetail(self):
+        return '{count=%d} ' % (self.count,)
     def subeval(self, lines):
         counter = 0
         for ln in lines:
@@ -280,8 +295,12 @@ class GameState:
     def __init__(self, infile, outfile):
         self.infile = infile
         self.outfile = outfile
+        # Lists of strings
         self.statuswin = []
         self.storywin = []
+        # Lists of line data lists
+        self.statuswindat = []
+        self.storywindat = []
 
     def initialize(self):
         pass
@@ -309,6 +328,14 @@ class GameStateRemGlk(GameState):
         dat = [ val.get('text') for val in con ]
         return ''.join(dat)
     
+    @staticmethod
+    def extract_raw(line):
+        # Extract the content array from a line object.
+        con = line.get('content')
+        if not con:
+            return []
+        return con
+    
     def initialize(self):
         import json
         update = { 'type':'init', 'gen':0,
@@ -320,9 +347,12 @@ class GameStateRemGlk(GameState):
         self.infile.flush()
         self.generation = 0
         self.windows = {}
+        # This doesn't track multiple-window input the way it should,
+        # nor distinguish hyperlink input state across multiple windows.
         self.lineinputwin = None
         self.charinputwin = None
         self.specialinput = None
+        self.hyperlinkinputwin = None
         
     def perform_input(self, cmd):
         import json
@@ -406,13 +436,16 @@ class GameStateRemGlk(GameState):
                 raise Exception('Cannot handle more than one grid window')
             if not grids:
                 self.statuswin = []
+                self.statuswindat = []
             else:
                 win = grids[0]
                 height = win.get('gridheight', 0)
                 if height < len(self.statuswin):
                     self.statuswin = self.statuswin[0:height]
+                    self.statuswindat = self.statuswindat[0:height]
                 while height > len(self.statuswin):
                     self.statuswin.append('')
+                    self.statuswindat.append([])
 
         contents = update.get('content')
         if contents is not None:
@@ -423,6 +456,7 @@ class GameStateRemGlk(GameState):
                     raise Exception('No such window')
                 if win.get('type') == 'buffer':
                     self.storywin = []
+                    self.storywindat = []
                     text = content.get('text')
                     if text:
                         for line in text:
@@ -434,6 +468,11 @@ class GameStateRemGlk(GameState):
                                 self.storywin[-1] += dat
                             else:
                                 self.storywin.append(dat)
+                            dat = self.extract_raw(line)
+                            if line.get('append') and len(self.storywindat):
+                                self.storywindat[-1].append(dat)
+                            else:
+                                self.storywindat.append([dat])
                 elif win.get('type') == 'grid':
                     lines = content.get('lines')
                     for line in lines:
@@ -441,6 +480,9 @@ class GameStateRemGlk(GameState):
                         dat = self.extract_text(line)
                         if linenum >= 0 and linenum < len(self.statuswin):
                             self.statuswin[linenum] = dat
+                        dat = self.extract_raw(line)
+                        if linenum >= 0 and linenum < len(self.statuswindat):
+                            self.statuswindat[linenum].append(dat)
 
         inputs = update.get('input')
         specialinputs = update.get('specialinput')
@@ -448,10 +490,12 @@ class GameStateRemGlk(GameState):
             self.specialinput = specialinputs.get('type')
             self.lineinputwin = None
             self.charinputwin = None
+            self.hyperlinkinputwin = None
         elif inputs is not None:
             self.specialinput = None
             self.lineinputwin = None
             self.charinputwin = None
+            self.hyperlinkinputwin = None
             for input in inputs:
                 if input.get('type') == 'line':
                     if self.lineinputwin:
@@ -461,6 +505,8 @@ class GameStateRemGlk(GameState):
                     if self.charinputwin:
                         raise Exception('Multiple windows accepting char input')
                     self.charinputwin = input.get('id')
+                if input.get('hyperlink'):
+                    self.hyperlinkinputwin = input.get('id')
 
 
 # Parse a test file (an Inform 6 source file with test data stuck on the
