@@ -118,6 +118,12 @@ class Command:
                 raise Exception('Unable to interpret char "%s"' % (cmd,))
         elif self.type == 'timer':
             self.cmd = None
+        elif self.type == 'hyperlink':
+            try:
+                cmd = int(cmd)
+            except:
+                pass
+            self.cmd = cmd
         elif self.type == 'include':
             self.cmd = cmd
         elif self.type == 'fileref_prompt':
@@ -276,8 +282,30 @@ class LiteralCountCheck(Check):
         else:
             return 'only found %d times' % (counter,)
 
-# This script only supports three kinds of checks.
-checkclasses = [ RegExpCheck, LiteralCountCheck, LiteralCheck ]
+class HyperlinkSpanCheck(Check):
+    inrawdata = True
+    @classmethod
+    def buildcheck(cla, ln, args):
+        match = re.match('{hyperlink=([0-9]+)}', ln)
+        if match:
+            ln = ln[ match.end() : ].strip()
+            res = HyperlinkSpanCheck(ln, **args)
+            res.linkvalue = int(match.group(1))
+            return res
+    def reprdetail(self):
+        return '{link=%d} ' % (self.linkvalue,)
+    def subeval(self, lines):
+        for para in lines:
+            for line in para:
+                for span in line:
+                    linkval = span.get('hyperlink')
+                    text = span.get('text', '')
+                    if linkval == self.linkvalue and self.ln in text:
+                        return
+        return 'not found'
+
+# This script only supports four kinds of checks.
+checkclasses = [ RegExpCheck, LiteralCountCheck, HyperlinkSpanCheck, LiteralCheck ]
 
 class GameState:
     """The GameState class wraps the connection to the interpreter subprocess
@@ -340,7 +368,7 @@ class GameStateRemGlk(GameState):
         import json
         update = { 'type':'init', 'gen':0,
                    'metrics': { 'width':80, 'height':40 },
-                   'support': [ 'timer' ],
+                   'support': [ 'timer', 'hyperlinks' ],
                    }
         cmd = json.dumps(update)
         self.infile.write((cmd+'\n').encode())
@@ -371,6 +399,12 @@ class GameStateRemGlk(GameState):
             # We should handle arrow keys, too
             update = { 'type':'char', 'gen':self.generation,
                        'window':self.charinputwin, 'value':val
+                       }
+        elif cmd.type == 'hyperlink':
+            if not self.hyperlinkinputwin:
+                raise Exception('Game is not expecting hyperlink input')
+            update = { 'type':'hyperlink', 'gen':self.generation,
+                       'window':self.hyperlinkinputwin, 'value':cmd.cmd
                        }
         elif cmd.type == 'timer':
             update = { 'type':'timer', 'gen':self.generation }
