@@ -900,3 +900,4 @@ for arg in args:
 if (totalerrors):
     print()
     print('FAILED: %d errors' % (totalerrors,))
+    sys.exit(1)
